@@ -19,24 +19,6 @@
 package appeng.parts.p2p;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import com.google.common.base.Optional;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -50,6 +32,7 @@ import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartItem;
 import appeng.api.parts.IPartRenderHelper;
 import appeng.api.parts.PartItemStack;
+import appeng.api.util.AEColor;
 import appeng.client.texture.CableBusTextures;
 import appeng.core.AEConfig;
 import appeng.me.GridAccessException;
@@ -57,6 +40,22 @@ import appeng.me.cache.P2PCache;
 import appeng.me.cache.helpers.TunnelCollection;
 import appeng.parts.PartBasicState;
 import appeng.util.Platform;
+import com.google.common.base.Optional;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.Vec3;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicState
@@ -81,7 +80,7 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 		return null;
 	}
 
-	T getInput()
+	public T getInput()
 	{
 		if( this.getFrequency() == 0 )
 		{
@@ -103,7 +102,7 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 		return null;
 	}
 
-	TunnelCollection<T> getOutputs() throws GridAccessException
+	public TunnelCollection<T> getOutputs() throws GridAccessException
 	{
 		if( this.getProxy().isActive() )
 		{
@@ -122,7 +121,7 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 
 	@Override
 	@SideOnly( Side.CLIENT )
-	public void renderInventory( final IPartRenderHelper rh, final RenderBlocks renderer )
+	public void renderInventory(final IPartRenderHelper rh, final RenderBlocks renderer)
 	{
 		rh.setTexture( this.getTypeTexture() );
 
@@ -236,6 +235,9 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 		final TunnelType tt = AEApi.instance().registries().p2pTunnel().getTunnelTypeByItem( is );
 		if( is != null && is.getItem() instanceof IMemoryCard )
 		{
+			if( ForgeEventFactory.onItemUseStart( player, is, 1 ) <= 0 )
+				return false;
+
 			final IMemoryCard mc = (IMemoryCard) is.getItem();
 			final NBTTagCompound data = mc.getData( is );
 
@@ -393,6 +395,9 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 		final ItemStack is = player.inventory.getCurrentItem();
 		if( is != null && is.getItem() instanceof IMemoryCard )
 		{
+			if( ForgeEventFactory.onItemUseStart( player, is, 1 ) <= 0 )
+				return false;
+
 			final IMemoryCard mc = (IMemoryCard) is.getItem();
 			final NBTTagCompound data = new NBTTagCompound();
 
