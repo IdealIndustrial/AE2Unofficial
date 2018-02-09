@@ -46,7 +46,7 @@ public enum ButtonToolTips
 
 	ClearSettings, StoredItems, StoredCraftable, Craftable,
 
-	FZPercent_25, FZPercent_50, FZPercent_75, FZPercent_99, FZIgnoreAll,
+	FZPercent_25, FZPercent_50, FZPercent_75, FZPercent_99, FZIgnoreAll,FZIPercent_1, 
 
 	MoveWhenEmpty, MoveWhenWorkIsDone, MoveWhenFull, Disabled, Enable,
 
