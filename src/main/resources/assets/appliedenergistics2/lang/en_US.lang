@@ -248,6 +248,7 @@ gui.tooltips.appliedenergistics2.FZPercent_25=Split Damage at 25%
 gui.tooltips.appliedenergistics2.FZPercent_50=Split Damage at 50%
 gui.tooltips.appliedenergistics2.FZPercent_75=Split Damage at 75%
 gui.tooltips.appliedenergistics2.FZPercent_99=Split Damage at 99%
+gui.tooltips.appliedenergistics2.FZPercent_1=Split Damage at 1%
 gui.tooltips.appliedenergistics2.SortOrder=Sort Order
 gui.tooltips.appliedenergistics2.SortBy=Sort By
 gui.tooltips.appliedenergistics2.FZIgnoreAll=Match Any
