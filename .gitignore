@@ -27,3 +27,6 @@
 .gradle/
 out/
 run/
+*.iws
+*.iml
+*.ipr
