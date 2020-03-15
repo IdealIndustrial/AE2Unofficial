@@ -31,10 +31,10 @@ repositories {
         url "http://mobiusstrip.eu/maven"
     }
 
-    maven {
-        name "FireBall API Depot"
-        url "http://myjfrog.acme.org/artifactory/"
-    }
+//    maven {
+//        name "FireBall API Depot"
+//        url "http://myjfrog.acme.org/artifactory/"
+//    }
 
     maven {
         name = "Player"
@@ -46,10 +46,10 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
 
-    maven  {
-        name = "RX14 Proxy"
-        url = "http://mvn.rx14.co.uk/repo/"
-    }
+//    maven  {
+//        name = "RX14 Proxy"
+//        url = "http://mvn.rx14.co.uk/repo/"
+//    }
 
     maven {
         name "OpenComputers Repo"
