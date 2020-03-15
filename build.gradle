@@ -16,13 +16,7 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-apply plugin: 'forge'
 
-apply from: 'gradle/scripts/dependencies.gradle'
-apply from: 'gradle/scripts/artifacts.gradle'
-apply from: 'gradle/scripts/autoinstallruntime.gradle'
-apply from: 'gradle/scripts/integration.gradle'
-apply from: 'gradle/scripts/optional.gradle'
 
 buildscript {
     repositories {
@@ -30,8 +24,13 @@ buildscript {
         mavenCentral()
 
         maven {
+            name = "MavenRepo"
+            url = "https://repo.maven.apache.org/maven2"
+        }
+
+        maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://files.minecraftforge.net/maven"
         }
 
         maven {
@@ -45,8 +44,16 @@ buildscript {
     }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+apply plugin: 'forge'
+
+apply from: 'gradle/scripts/dependencies.gradle'
+apply from: 'gradle/scripts/artifacts.gradle'
+apply from: 'gradle/scripts/autoinstallruntime.gradle'
+apply from: 'gradle/scripts/integration.gradle'
+apply from: 'gradle/scripts/optional.gradle'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 version = aeversion + "-" + aechannel + "-" + aebuild
 group = aegroup
