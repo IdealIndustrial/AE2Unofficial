@@ -19,6 +19,7 @@
 package appeng.client.gui.implementations;
 
 
+import appeng.parts.reporting.PartPatternTerminalEx;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -132,7 +133,14 @@ public class GuiCraftAmount extends AEBaseGui
 			}
 			this.originalGui = GuiBridge.GUI_PATTERN_TERMINAL;
 		}
-
+		if( target instanceof PartPatternTerminalEx)
+		{
+			for( final ItemStack stack : parts.patternTerminalEx().maybeStack( 1 ).asSet() )
+			{
+				myIcon = stack;
+			}
+			this.originalGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
+		}
 		if( this.originalGui != null && myIcon != null )
 		{
 			this.buttonList.add( this.originalGuiBtn = new GuiTabButton( this.guiLeft + 154, this.guiTop, myIcon, myIcon.getDisplayName(), itemRender ) );

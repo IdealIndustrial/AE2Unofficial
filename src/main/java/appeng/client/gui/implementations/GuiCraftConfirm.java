@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import appeng.parts.reporting.PartPatternTerminalEx;
 import com.google.common.base.Joiner;
 
 import org.lwjgl.input.Mouse;
@@ -104,8 +105,13 @@ public class GuiCraftConfirm extends AEBaseGui
 		{
 			this.OriginalGui = GuiBridge.GUI_PATTERN_TERMINAL;
 		}
-	}
 
+
+		if( te instanceof PartPatternTerminalEx)
+		{
+			this.OriginalGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
+		}
+	}
 	boolean isAutoStart()
 	{
 		return ( (ContainerCraftConfirm) this.inventorySlots ).isAutoStart();

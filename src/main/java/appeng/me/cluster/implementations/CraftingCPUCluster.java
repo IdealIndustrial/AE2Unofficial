@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import appeng.api.config.Upgrades;
+import appeng.helpers.DualityInterface;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -664,14 +666,18 @@ public final class CraftingCPUCluster implements IAECluster, ICraftingCPU
 									sum += anInput.getStackSize();
 								}
 							}
-
+							// upgraded interface uses more power
+							if (m instanceof DualityInterface)
+								sum *= Math.pow(4.0, ((DualityInterface)m).getInstalledUpgrades(Upgrades.PATTERN_CAPACITY));
 							// power...
 							if( eg.extractAEPower( sum, Actionable.MODULATE, PowerMultiplier.CONFIG ) < sum - 0.01 )
 							{
 								continue;
 							}
 
-							ic = new InventoryCrafting( new ContainerNull(), 3, 3 );
+							ic = details.isCraftable() ? new InventoryCrafting( new ContainerNull(), 3, 3 ):
+									new InventoryCrafting( new ContainerNull(), details.getInputs().length, 1 );
+
 							boolean found = false;
 
 							for( int x = 0; x < input.length; x++ )

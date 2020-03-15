@@ -86,7 +86,7 @@ public class PatternHelper implements ICraftingPatternDetails, Comparable<Patter
 		for( int x = 0; x < inTag.tagCount(); x++ )
 		{
 			final ItemStack gs = ItemStack.loadItemStackFromNBT( inTag.getCompoundTagAt( x ) );
-
+			if( this.isCrafting ) // processing recipes are not looked up
 			this.crafting.setInventorySlotContents( x, gs );
 
 			if( gs != null && ( !this.isCrafting || !gs.hasTagCompound() ) )
@@ -95,6 +95,7 @@ public class PatternHelper implements ICraftingPatternDetails, Comparable<Patter
 			}
 
 			in.add( AEApi.instance().storage().createItemStack( gs ) );
+			if( this.isCrafting ) // processing recipes are not tested anyway
 			this.testFrame.setInventorySlotContents( x, gs );
 		}
 

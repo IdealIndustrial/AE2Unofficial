@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
+import appeng.parts.reporting.PartPatternTerminalEx;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -343,6 +344,11 @@ public class ContainerCraftConfirm extends AEBaseContainer
 		if( ah instanceof PartPatternTerminal )
 		{
 			originalGui = GuiBridge.GUI_PATTERN_TERMINAL;
+		}
+
+		if( ah instanceof PartPatternTerminalEx)
+		{
+			originalGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
 		}
 
 		if( this.result != null && !this.isSimulation() )

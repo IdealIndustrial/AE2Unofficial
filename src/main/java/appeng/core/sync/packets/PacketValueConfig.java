@@ -25,6 +25,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import appeng.container.implementations.*;
+import appeng.container.implementations.ContainerPatternTermEx;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -40,17 +42,6 @@ import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.client.gui.implementations.GuiCraftingCPU;
 import appeng.container.AEBaseContainer;
-import appeng.container.implementations.ContainerCellWorkbench;
-import appeng.container.implementations.ContainerCraftConfirm;
-import appeng.container.implementations.ContainerCraftingCPU;
-import appeng.container.implementations.ContainerCraftingStatus;
-import appeng.container.implementations.ContainerLevelEmitter;
-import appeng.container.implementations.ContainerNetworkTool;
-import appeng.container.implementations.ContainerPatternTerm;
-import appeng.container.implementations.ContainerPriority;
-import appeng.container.implementations.ContainerQuartzKnife;
-import appeng.container.implementations.ContainerSecurity;
-import appeng.container.implementations.ContainerStorageBus;
 import appeng.core.sync.AppEngPacket;
 import appeng.core.sync.network.INetworkInfo;
 import appeng.helpers.IMouseWheelItem;
@@ -163,6 +154,24 @@ public class PacketValueConfig extends AppEngPacket
 				cpt.getPatternTerminal().setSubstitution( this.Value.equals( "1" ) );
 			}
 		}
+
+		else if( this.Name.startsWith( "PatternTerminalEx." ) && c instanceof ContainerPatternTermEx )
+		{
+			final ContainerPatternTermEx cpt = (ContainerPatternTermEx) c;
+			if( this.Name.equals( "PatternTerminalEx.Encode" ) )
+			{
+				cpt.encode();
+			}
+			else if( this.Name.equals( "PatternTerminalEx.Clear" ) )
+			{
+				cpt.clear();
+			}
+			else if( this.Name.equals( "PatternTerminalEx.Substitute" ) )
+			{
+				cpt.getPatternTerminal().setSubstitution( this.Value.equals( "1" ) );
+			}
+		}
+
 		else if( this.Name.startsWith( "StorageBus." ) && c instanceof ContainerStorageBus )
 		{
 			final ContainerStorageBus ccw = (ContainerStorageBus) c;

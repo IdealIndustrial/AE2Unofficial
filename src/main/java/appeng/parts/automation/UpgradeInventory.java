@@ -43,6 +43,7 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 	private int capacityUpgrades = 0;
 	private int inverterUpgrades = 0;
 	private int craftingUpgrades = 0;
+	private int patternCapacityUpgrades = 0;
 
 	public UpgradeInventory( final IAEAppEngInventory parent, final int s )
 	{
@@ -91,6 +92,8 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 
 		switch( u )
 		{
+			case PATTERN_CAPACITY:
+				return this.patternCapacityUpgrades;
 			case CAPACITY:
 				return this.capacityUpgrades;
 			case FUZZY:
@@ -113,8 +116,7 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 	private void updateUpgradeInfo()
 	{
 		this.cached = true;
-		this.inverterUpgrades = this.capacityUpgrades = this.redstoneUpgrades = this.speedUpgrades = this.fuzzyUpgrades = this.craftingUpgrades = 0;
-
+		this.patternCapacityUpgrades = this.inverterUpgrades = this.capacityUpgrades = this.redstoneUpgrades = this.speedUpgrades = this.fuzzyUpgrades = this.craftingUpgrades = 0;
 		for( final ItemStack is : this )
 		{
 			if( is == null || is.getItem() == null || !( is.getItem() instanceof IUpgradeModule ) )
@@ -125,6 +127,9 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 			final Upgrades myUpgrade = ( (IUpgradeModule) is.getItem() ).getType( is );
 			switch( myUpgrade )
 			{
+				case PATTERN_CAPACITY:
+					this.patternCapacityUpgrades++;
+					break;
 				case CAPACITY:
 					this.capacityUpgrades++;
 					break;
@@ -154,6 +159,7 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 		this.speedUpgrades = Math.min( this.speedUpgrades, this.getMaxInstalled( Upgrades.SPEED ) );
 		this.inverterUpgrades = Math.min( this.inverterUpgrades, this.getMaxInstalled( Upgrades.INVERTER ) );
 		this.craftingUpgrades = Math.min( this.craftingUpgrades, this.getMaxInstalled( Upgrades.CRAFTING ) );
+		this.patternCapacityUpgrades = Math.min( this.patternCapacityUpgrades, this.getMaxInstalled( Upgrades.PATTERN_CAPACITY ) );
 	}
 
 	@Override

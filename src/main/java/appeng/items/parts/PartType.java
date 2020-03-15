@@ -53,15 +53,7 @@ import appeng.parts.p2p.PartP2PPressure;
 import appeng.parts.p2p.PartP2PRFPower;
 import appeng.parts.p2p.PartP2PRedstone;
 import appeng.parts.p2p.PartP2PTunnelME;
-import appeng.parts.reporting.PartConversionMonitor;
-import appeng.parts.reporting.PartCraftingTerminal;
-import appeng.parts.reporting.PartDarkPanel;
-import appeng.parts.reporting.PartInterfaceTerminal;
-import appeng.parts.reporting.PartPanel;
-import appeng.parts.reporting.PartPatternTerminal;
-import appeng.parts.reporting.PartSemiDarkPanel;
-import appeng.parts.reporting.PartStorageMonitor;
-import appeng.parts.reporting.PartTerminal;
+import appeng.parts.reporting.*;
 
 
 public enum PartType
@@ -162,7 +154,9 @@ public enum PartType
 
 	P2PTunnelPressure( 469, EnumSet.of( AEFeature.P2PTunnel, AEFeature.P2PTunnelPressure ), EnumSet.of( IntegrationType.PneumaticCraft ), PartP2PPressure.class, GuiText.PressureTunnel ),
 
-	InterfaceTerminal( 480, EnumSet.of( AEFeature.InterfaceTerminal ), EnumSet.noneOf( IntegrationType.class ), PartInterfaceTerminal.class );
+	InterfaceTerminal( 480, EnumSet.of( AEFeature.InterfaceTerminal ), EnumSet.noneOf( IntegrationType.class ), PartInterfaceTerminal.class ),
+
+	PatternTerminalEx( 500, EnumSet.of( AEFeature.Patterns ), EnumSet.noneOf( IntegrationType.class ), PartPatternTerminalEx.class );
 
 	private final int baseDamage;
 	private final Set<AEFeature> features;
