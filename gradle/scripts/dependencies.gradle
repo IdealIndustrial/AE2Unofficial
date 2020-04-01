@@ -97,16 +97,15 @@ configurations {
 
 dependencies {
 
-	provided fileTree(dir: 'libs/', include:'*.jar')
+	provided fileTree(dir: 'lib/', include:'*.jar')
     // installable
     mods "mcp.mobius.jabba:Jabba:${jabba_version}_${minecraft_version}:dev"
     mods "codechicken:EnderStorage:${minecraft_version}-${enderstorage_version}:dev"
     mods "codechicken:Translocator:${minecraft_version}-${translocator_version}:dev"
     mods "net.industrial-craft:industrialcraft-2:${ic2_version}-experimental:dev"
     mods "com.enderio:EnderIO:${minecraft_version}-${enderio_version}:dev"
-//    mods "net.mcft.copy.betterstorage:BetterStorage:${minecraft_version}-${betterstorage_version}:deobf"
+    //mods "net.mcft.copy.betterstorage:BetterStorage:${minecraft_version}-${betterstorage_version}:deobf"
     mods "li.cil.oc:OpenComputers:MC${minecraft_version}-${opencomputers_version}:dev"
-
     // self compiled stubs
     compile(group: 'api', name: 'coloredlightscore', version: "${api_coloredlightscore_version}")
     compile(group: 'api', name: 'craftguide', version: "${api_craftguide_version}")
@@ -114,6 +113,5 @@ dependencies {
     compile(group: 'api', name: 'mfr', version: "${api_mfr_version}")
     compile(group: 'api', name: 'railcraft', version: "${api_railcraft_version}")
     compile(group: 'api', name: 'rf', version: "${api_rf_version}")
-
     testCompile "junit:junit:4.12"
 }
