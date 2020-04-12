@@ -70,6 +70,7 @@ import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.AdaptorIInventory;
 import appeng.util.inv.IInventoryDestination;
+import appeng.util.inv.ItemSlot;
 import appeng.util.inv.WrapperInvSlot;
 import appeng.util.item.AEItemStack;
 import com.google.common.collect.ImmutableSet;
@@ -138,7 +139,7 @@ public class DualityInterface
 		this.fluids.setChangeSource( actionSource );
 		this.items.setChangeSource( actionSource );
 
-		this.interfaceRequestSource = new InterfaceRequestSource( this.iHost );
+		this.interfaceRequestSource = new InterfaceRequestSource(this.iHost);
 	}
 
 	@Override
@@ -657,7 +658,7 @@ public class DualityInterface
 
 			if( this.craftingTracker.isBusy( x ) )
 			{
-				changed = this.handleCrafting( x, adaptor, itemStack ) || changed;
+				changed = this.handleCrafting( x, adaptor, itemStack );
 			}
 			else if( itemStack.getStackSize() > 0 )
 			{
@@ -680,7 +681,7 @@ public class DualityInterface
 				}
 				else
 				{
-					changed = this.handleCrafting( x, adaptor, itemStack ) || changed;
+					changed = this.handleCrafting( x, adaptor, itemStack );
 				}
 			}
 			else if( itemStack.getStackSize() < 0 )
@@ -879,7 +880,15 @@ public class DualityInterface
 			}
 		};
 	}
-
+	private boolean gtMachineHasOnlyCircuit(InventoryAdaptor ad) {
+		for (ItemSlot i : ad) {
+			ItemStack is = i.getItemStack();
+			if (is == null || is.getItem().getUnlocalizedName().equals("gt.integrated_circuit"))
+				continue;
+			return false;
+		}
+		return true;
+	}
 	@Override
 	public boolean pushPattern( final ICraftingPatternDetails patternDetails, final InventoryCrafting table )
 	{
@@ -926,12 +935,9 @@ public class DualityInterface
 			final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( te, s.getOpposite() );
 			if( ad != null )
 			{
-				if( this.isBlocking() )
-				{
-					if( ad.simulateRemove( 1, null, null ) != null )
-					{
+				if (this.isBlocking() && ad.containsItems()) {
+					if (!te.getBlockType().getUnlocalizedName().equals("gt.blockmachines") || !gtMachineHasOnlyCircuit(ad))
 						continue;
-					}
 				}
 
 				if( this.acceptsItems( ad, table ) )
@@ -1075,7 +1081,7 @@ public class DualityInterface
 
 	public IUpgradeableHost getHost()
 	{
-		if( this.getPart() instanceof IUpgradeableHost )
+		if(this.getPart() != null)
 		{
 			return (IUpgradeableHost) this.getPart();
 		}
@@ -1254,7 +1260,7 @@ public class DualityInterface
 		}
 	}
 
-	private class InterfaceRequestSource extends MachineSource
+	private static class InterfaceRequestSource extends MachineSource
 	{
 
 		public InterfaceRequestSource( final IActionHost v )
