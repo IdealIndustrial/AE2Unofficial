@@ -19,18 +19,17 @@
 package appeng.integration.modules.waila.part;
 
 
-import java.util.List;
-
+import appeng.api.parts.IPart;
+import appeng.api.parts.PartItemStack;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-
-import appeng.api.parts.IPart;
+import java.util.List;
 
 
 /**
@@ -40,12 +39,12 @@ import appeng.api.parts.IPart;
  * @version rv2
  * @since rv2
  */
-public abstract class BasePartWailaDataProvider implements IPartWailaDataProvider
+public class BasePartWailaDataProvider implements IPartWailaDataProvider
 {
 	@Override
 	public ItemStack getWailaStack( final IPart part, final IWailaConfigHandler config, final ItemStack partStack )
 	{
-		return null;
+		return part.getItemStack(PartItemStack.World);
 	}
 
 	@Override
