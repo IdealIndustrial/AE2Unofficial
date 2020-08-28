@@ -656,35 +656,7 @@ public class DualityInterface
 			this.destination = this.gridProxy.getStorage().getItemInventory();
 			final IEnergySource src = this.gridProxy.getEnergy();
 
-			if( this.craftingTracker.isBusy( x ) )
-			{
-				changed = this.handleCrafting( x, adaptor, itemStack );
-			}
-			else if( itemStack.getStackSize() > 0 )
-			{
-				// make sure strange things didn't happen...
-				if( adaptor.simulateAdd( itemStack.getItemStack() ) != null )
-				{
-					changed = true;
-					throw new GridAccessException();
-				}
-
-				final IAEItemStack acquired = Platform.poweredExtraction( src, this.destination, itemStack, this.interfaceRequestSource );
-				if( acquired != null )
-				{
-					changed = true;
-					final ItemStack issue = adaptor.addItems( acquired.getItemStack() );
-					if( issue != null )
-					{
-						throw new IllegalStateException( "bad attempt at managing inventory. ( addItems )" );
-					}
-				}
-				else
-				{
-					changed = this.handleCrafting( x, adaptor, itemStack );
-				}
-			}
-			else if( itemStack.getStackSize() < 0 )
+			if( itemStack.getStackSize() < 0 )
 			{
 				IAEItemStack toStore = itemStack.copy();
 				toStore.setStackSize( -toStore.getStackSize() );
@@ -719,6 +691,34 @@ public class DualityInterface
 					{
 						throw new IllegalStateException( "bad attempt at managing inventory. ( removeItems )" );
 					}
+				}
+			}
+			else if( this.craftingTracker.isBusy( x ) )
+			{
+				changed = this.handleCrafting( x, adaptor, itemStack );
+			}
+			else if( itemStack.getStackSize() > 0 )
+			{
+				// make sure strange things didn't happen...
+				if( adaptor.simulateAdd( itemStack.getItemStack() ) != null )
+				{
+					changed = true;
+					throw new GridAccessException();
+				}
+
+				final IAEItemStack acquired = Platform.poweredExtraction( src, this.destination, itemStack, this.interfaceRequestSource );
+				if( acquired != null )
+				{
+					changed = true;
+					final ItemStack issue = adaptor.addItems( acquired.getItemStack() );
+					if( issue != null )
+					{
+						throw new IllegalStateException( "bad attempt at managing inventory. ( addItems )" );
+					}
+				}
+				else
+				{
+					changed = this.handleCrafting( x, adaptor, itemStack );
 				}
 			}
 			// else wtf?
