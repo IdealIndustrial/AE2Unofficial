@@ -266,6 +266,11 @@ public class ContainerCraftingCPU extends AEBaseContainer implements IMEMonitorH
 		return this.cpuName != null && this.cpuName.length() > 0;
 	}
 
+	@Override
+	public void setCustomName(String name) {
+		this.cpuName = name;
+	}
+
 	public long getEstimatedTime()
 	{
 		return this.eta;

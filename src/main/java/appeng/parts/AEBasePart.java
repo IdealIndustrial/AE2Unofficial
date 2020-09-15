@@ -19,16 +19,33 @@
 package appeng.parts;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
-
+import appeng.api.AEApi;
+import appeng.api.config.Upgrades;
+import appeng.api.definitions.IDefinitions;
+import appeng.api.implementations.IUpgradeableHost;
+import appeng.api.implementations.items.IMemoryCard;
+import appeng.api.implementations.items.MemoryCardMessages;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
+import appeng.api.parts.*;
+import appeng.api.util.AECableType;
+import appeng.api.util.AEColor;
+import appeng.api.util.DimensionalCoord;
+import appeng.api.util.IConfigManager;
+import appeng.core.sync.GuiBridge;
+import appeng.helpers.ICustomNameObject;
+import appeng.helpers.IPriorityHost;
+import appeng.items.tools.quartz.ToolQuartzCuttingKnife;
+import appeng.me.helpers.AENetworkProxy;
+import appeng.me.helpers.IGridProxyable;
+import appeng.parts.networking.PartCable;
+import appeng.tile.inventory.AppEngInternalAEInventory;
+import appeng.util.Platform;
+import appeng.util.SettingsFrom;
 import com.google.common.base.Preconditions;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -42,37 +59,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import appeng.api.AEApi;
-import appeng.api.config.Upgrades;
-import appeng.api.definitions.IDefinitions;
-import appeng.api.implementations.IUpgradeableHost;
-import appeng.api.implementations.items.IMemoryCard;
-import appeng.api.implementations.items.MemoryCardMessages;
-import appeng.api.networking.IGridNode;
-import appeng.api.networking.security.IActionHost;
-import appeng.api.parts.BusSupport;
-import appeng.api.parts.IPart;
-import appeng.api.parts.IPartCollisionHelper;
-import appeng.api.parts.IPartHost;
-import appeng.api.parts.IPartRenderHelper;
-import appeng.api.parts.ISimplifiedBundle;
-import appeng.api.parts.PartItemStack;
-import appeng.api.util.AECableType;
-import appeng.api.util.AEColor;
-import appeng.api.util.DimensionalCoord;
-import appeng.api.util.IConfigManager;
-import appeng.helpers.ICustomNameObject;
-import appeng.helpers.IPriorityHost;
-import appeng.me.helpers.AENetworkProxy;
-import appeng.me.helpers.IGridProxyable;
-import appeng.parts.networking.PartCable;
-import appeng.tile.inventory.AppEngInternalAEInventory;
-import appeng.util.Platform;
-import appeng.util.SettingsFrom;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Random;
 
 
 public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, IUpgradeableHost, ICustomNameObject
@@ -195,6 +189,11 @@ public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, 
 	public String getCustomName()
 	{
 		return this.getItemStack().getDisplayName();
+	}
+
+	@Override
+	public void setCustomName(String name) {
+		this.getItemStack().setStackDisplayName(name);
 	}
 
 	@Override
@@ -373,7 +372,7 @@ public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, 
 	/**
 	 * depending on the from, different settings will be accepted, don't call this with null
 	 *
-	 * @param from source of settings
+	 * @param from     source of settings
 	 * @param compound compound of source
 	 */
 	private void uploadSettings( final SettingsFrom from, final NBTTagCompound compound )
@@ -410,7 +409,6 @@ public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, 
 	 * null means nothing to store...
 	 *
 	 * @param from source of settings
-	 *
 	 * @return compound of source
 	 */
 	private NBTTagCompound downloadSettings( final SettingsFrom from )
@@ -447,8 +445,12 @@ public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, 
 	{
 		final ItemStack memCardIS = player.inventory.getCurrentItem();
 
+
 		if( memCardIS != null && this.useStandardMemoryCard() && memCardIS.getItem() instanceof IMemoryCard )
 		{
+			if( ForgeEventFactory.onItemUseStart( player, memCardIS, 1 ) <= 0 )
+				return false;
+
 			final IMemoryCard memoryCard = (IMemoryCard) memCardIS.getItem();
 
 			ItemStack is = this.getItemStack( PartItemStack.Network );
@@ -493,20 +495,42 @@ public abstract class AEBasePart implements IPart, IGridProxyable, IActionHost, 
 		return false;
 	}
 
+	private boolean useRenamer( final EntityPlayer player )
+	{
+		final ItemStack is = player.inventory.getCurrentItem();
+		if( is != null && is.getItem() instanceof ToolQuartzCuttingKnife) {
+			if (ForgeEventFactory.onItemUseStart(player, is, 1) <= 0)
+				return false;
+			Platform.openGUI( player, tile, side, GuiBridge.GUI_RENAMER );
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public final boolean onActivate( final EntityPlayer player, final Vec3 pos )
 	{
-		if( this.useMemoryCard( player ) )
-		{
-			return true;
-		}
+		//		int x = (int) pos.xCoord, y = (int) pos.yCoord, z = (int) pos.zCoord;
+		int x = this.tile.xCoord, y = this.tile.yCoord, z = this.tile.zCoord;
+		PlayerInteractEvent event = ForgeEventFactory.onPlayerInteract( player, PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, x, y, z, this.side.flag, player.getEntityWorld() );
+		if( event.isCanceled() )
+			return false;
 
-		return this.onPartActivate( player, pos );
+		if (this.useMemoryCard( player ) || useRenamer(player))
+			return true;
+
+		return onPartActivate( player, pos );
 	}
 
 	@Override
 	public final boolean onShiftActivate( final EntityPlayer player, final Vec3 pos )
 	{
+		//		int x = (int) pos.xCoord, y = (int) pos.yCoord, z = (int) pos.zCoord;
+		int x = this.tile.xCoord, y = this.tile.yCoord, z = this.tile.zCoord;
+		PlayerInteractEvent event = ForgeEventFactory.onPlayerInteract( player, PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, x, y, z, this.side.flag, player.getEntityWorld() );
+		if( event.isCanceled() )
+			return false;
+
 		if( this.useMemoryCard( player ) )
 		{
 			return true;

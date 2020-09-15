@@ -93,6 +93,10 @@ public enum GuiText
 
 	// processing pattern terminal
 	PatternTerminalEx,
+
+	// renaming GUI label
+	Renamer,
+
 	// Used in a ME Interface when no appropriate TileEntity was detected near it
 	Nothing;
 

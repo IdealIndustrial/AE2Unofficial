@@ -19,16 +19,26 @@
 package appeng.block;
 
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import appeng.api.implementations.items.IMemoryCard;
+import appeng.api.implementations.items.MemoryCardMessages;
+import appeng.api.implementations.tiles.IColorableTile;
+import appeng.api.util.AEColor;
+import appeng.api.util.IOrientable;
+import appeng.block.networking.BlockCableBus;
+import appeng.core.features.AEFeature;
+import appeng.core.features.AETileBlockFeatureHandler;
+import appeng.core.features.IAEFeature;
+import appeng.core.sync.GuiBridge;
+import appeng.helpers.ICustomCollision;
+import appeng.items.tools.quartz.ToolQuartzCuttingKnife;
+import appeng.tile.AEBaseTile;
+import appeng.tile.networking.TileCableBus;
+import appeng.tile.storage.TileSkyChest;
+import appeng.util.Platform;
+import appeng.util.SettingsFrom;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -41,25 +51,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.world.BlockEvent;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
-
-import appeng.api.implementations.items.IMemoryCard;
-import appeng.api.implementations.items.MemoryCardMessages;
-import appeng.api.implementations.tiles.IColorableTile;
-import appeng.api.util.AEColor;
-import appeng.api.util.IOrientable;
-import appeng.block.networking.BlockCableBus;
-import appeng.core.features.AEFeature;
-import appeng.core.features.AETileBlockFeatureHandler;
-import appeng.core.features.IAEFeature;
-import appeng.helpers.ICustomCollision;
-import appeng.tile.AEBaseTile;
-import appeng.tile.networking.TileCableBus;
-import appeng.tile.storage.TileSkyChest;
-import appeng.util.Platform;
-import appeng.util.SettingsFrom;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 
 public abstract class AEBaseTileBlock extends AEBaseBlock implements IAEFeature, ITileEntityProvider
@@ -221,7 +222,7 @@ public abstract class AEBaseTileBlock extends AEBaseBlock implements IAEFeature,
 	{
 		super.onBlockEventReceived( p_149696_1_, p_149696_2_, p_149696_3_, p_149696_4_, p_149696_5_, p_149696_6_ );
 		final TileEntity tileentity = p_149696_1_.getTileEntity( p_149696_2_, p_149696_3_, p_149696_4_ );
-		return tileentity != null ? tileentity.receiveClientEvent( p_149696_5_, p_149696_6_ ) : false;
+		return tileentity != null && tileentity.receiveClientEvent( p_149696_5_, p_149696_6_ );
 	}
 
 	@Override
@@ -238,7 +239,7 @@ public abstract class AEBaseTileBlock extends AEBaseBlock implements IAEFeature,
 	}
 
 	@Override
-	public final boolean onBlockActivated( final World w, final int x, final int y, final int z, final EntityPlayer player, final int side, final float hitX, final float hitY, final float hitZ )
+	public boolean onBlockActivated( final World w, final int x, final int y, final int z, final EntityPlayer player, final int side, final float hitX, final float hitY, final float hitZ )
 	{
 		if( player != null )
 		{
@@ -259,6 +260,13 @@ public abstract class AEBaseTileBlock extends AEBaseBlock implements IAEFeature,
 						}
 
 						if( tile instanceof TileCableBus || tile instanceof TileSkyChest )
+						{
+							return false;
+						}
+
+						BlockEvent.BreakEvent event = new BlockEvent.BreakEvent( x, y, z, w, this, 0, player );
+						MinecraftForge.EVENT_BUS.post( event );
+						if( event.isCanceled() )
 						{
 							return false;
 						}
@@ -320,6 +328,16 @@ public abstract class AEBaseTileBlock extends AEBaseBlock implements IAEFeature,
 						}
 						return false;
 					}
+				}
+				if( is.getItem() instanceof ToolQuartzCuttingKnife && !( this instanceof BlockCableBus ) )
+				{
+					if( ForgeEventFactory.onItemUseStart( player, is, 1 ) <= 0 )
+						return false;
+					final AEBaseTile tile = this.getTileEntity( w, x, y, z );
+					if( tile == null )
+						return false;
+					Platform.openGUI( player, tile, ForgeDirection.getOrientation( side ), GuiBridge.GUI_RENAMER );
+					return true;
 				}
 			}
 		}

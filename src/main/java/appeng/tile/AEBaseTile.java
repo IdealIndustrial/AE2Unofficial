@@ -565,6 +565,11 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 		return this.customName != null && this.customName.length() > 0;
 	}
 
+	@Override
+	public void setCustomName(String name) {
+		this.customName = name;
+	}
+
 	public void securityBreak()
 	{
 		this.worldObj.func_147480_a( this.xCoord, this.yCoord, this.zCoord, true );
