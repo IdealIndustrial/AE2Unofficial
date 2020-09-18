@@ -108,7 +108,7 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 		{
 			return (TunnelCollection<T>) this.getProxy().getP2P().getOutputs( this.getFrequency(), this.getClass() );
 		}
-		return new TunnelCollection( new ArrayList(), this.getClass() );
+		return new TunnelCollection<T>( new ArrayList<T>(), this.getClass() );
 	}
 
 	@Override
@@ -257,13 +257,16 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 
 						if( newBus instanceof PartP2PTunnel )
 						{
-							final PartP2PTunnel newTunnel = (PartP2PTunnel) newBus;
+							final PartP2PTunnel<?> newTunnel = (PartP2PTunnel<?>) newBus;
 							newTunnel.setOutput( true );
 
 							try
 							{
 								final P2PCache p2p = newTunnel.getProxy().getP2P();
 								p2p.updateFreq( newTunnel, freq );
+								PartP2PTunnel input = p2p.getInput(freq);
+								if (input != null)
+									newTunnel.setCustomNameInternal(input.getCustomName());
 							}
 							catch( final GridAccessException e )
 							{
@@ -364,9 +367,9 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 				final ForgeDirection dir = this.getHost().addPart( newType, this.getSide(), player );
 				final IPart newBus = this.getHost().getPart( dir );
 
-				if( newBus instanceof PartP2PTunnel )
+				if( newBus instanceof PartP2PTunnel<?> )
 				{
-					final PartP2PTunnel newTunnel = (PartP2PTunnel) newBus;
+					final PartP2PTunnel<?> newTunnel = (PartP2PTunnel<?>) newBus;
 					newTunnel.setOutput( oldOutput );
 					newTunnel.onTunnelNetworkChange();
 
@@ -426,6 +429,8 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 
 			p2pItem.writeToNBT( data );
 			data.setLong( "freq", this.getFrequency() );
+			if (hasCustomName())
+				data.setString("custom_name", getCustomName());
 
 			mc.setMemoryCardContents( is, type + ".name", data );
 			mc.notifyUser( player, MemoryCardMessages.SETTINGS_SAVED );
@@ -482,5 +487,24 @@ public abstract class PartP2PTunnel<T extends PartP2PTunnel> extends PartBasicSt
 	void setOutput( final boolean output )
 	{
 		this.output = output;
+	}
+
+	@Override
+	public void setCustomName(String name) {
+		T i = getInput();
+		if (i != null) {
+			i.setCustomNameInternal(name);
+			try {
+				for (T o : getOutputs())
+					o.setCustomNameInternal(name);
+			} catch (GridAccessException ignored) {
+			}
+		}
+		else // let unlinked tunnel have a name
+			super.setCustomName(name);
+	}
+	void setCustomNameInternal(String name)
+	{
+		super.setCustomName(name);
 	}
 }
