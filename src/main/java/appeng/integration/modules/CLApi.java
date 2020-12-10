@@ -16,7 +16,7 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.integration.modules;
+/*package appeng.integration.modules;
 
 
 import appeng.api.util.AEColor;
@@ -59,4 +59,4 @@ public class CLApi implements ICLApi, IIntegrationModule
 
 		return coloredlightscore.src.api.CLApi.makeRGBLightValue( r / 255.0f, g / 255.0f, b / 255.0f, light / 15.0f );
 	}
-}
+}*/

@@ -108,7 +108,6 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 		{
 			this.addSlotToContainer( this.outputSlots[y] = new SlotPatternOutputs( output, this, y, 110, -76 + y * 18, 0, 0, 1 ) );
 			this.outputSlots[y].setRenderDisabled( false );
-			this.outputSlots[y].setIIcon( -1 );
 		}
 
 		this.addSlotToContainer( this.patternSlotIN = new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.BLANK_PATTERN, patternInv, 0, 147, -72 - 9, this.getInventoryPlayer() ) );

@@ -16,7 +16,8 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.integration.modules;
+
+/*package appeng.integration.modules;
 
 
 import java.util.Arrays;
@@ -457,3 +458,4 @@ public final class CraftGuide extends CraftGuideAPIObject implements IIntegratio
 		return null;
 	}
 }
+*/

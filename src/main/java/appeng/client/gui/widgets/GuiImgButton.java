@@ -133,6 +133,9 @@ public class GuiImgButton extends GuiButton implements ITooltip
 			this.registerApp( 4 + 3 * 16, Settings.ACTIONS, ItemSubstitution.ENABLED, ButtonToolTips.Substitutions, ButtonToolTips.SubstitutionsDescEnabled );
 			this.registerApp( 7 + 3 * 16, Settings.ACTIONS, ItemSubstitution.DISABLED, ButtonToolTips.Substitutions, ButtonToolTips.SubstitutionsDescDisabled );
 
+			this.registerApp( 8 + 16, Settings.ACTIONS, PatternSlotConfig.C_16_4, ButtonToolTips.PatternSlotConfigTitle, ButtonToolTips.PatternSlotConfigInfo );
+			this.registerApp( 8 + 16, Settings.ACTIONS, PatternSlotConfig.C_4_16, ButtonToolTips.PatternSlotConfigTitle, ButtonToolTips.PatternSlotConfigInfo );
+
 			this.registerApp( 16, Settings.VIEW_MODE, ViewItems.STORED, ButtonToolTips.View, ButtonToolTips.StoredItems );
 			this.registerApp( 18, Settings.VIEW_MODE, ViewItems.ALL, ButtonToolTips.View, ButtonToolTips.StoredCraftable );
 			this.registerApp( 19, Settings.VIEW_MODE, ViewItems.CRAFTABLE, ButtonToolTips.View, ButtonToolTips.Craftable );

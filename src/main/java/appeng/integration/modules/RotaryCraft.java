@@ -32,8 +32,8 @@ public class RotaryCraft implements IIntegrationModule
 	@Reflected
 	public RotaryCraft()
 	{
-		IntegrationHelper.testClassExistence( this, Reika.RotaryCraft.API.Power.AdvancedShaftPowerReceiver.class );
-		IntegrationHelper.testClassExistence( this, Reika.RotaryCraft.API.Interfaces.Transducerable.class );
+//		IntegrationHelper.testClassExistence( this, Reika.RotaryCraft.API.Power.AdvancedShaftPowerReceiver.class );
+//		IntegrationHelper.testClassExistence( this, Reika.RotaryCraft.API.Interfaces.Transducerable.class );
 	}
 
 	@Override

@@ -16,6 +16,7 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
+/*
 package appeng.tile.powersink;
 
 
@@ -183,3 +184,4 @@ public abstract class RotaryCraft extends IC2 implements AdvancedShaftPowerRecei
 		return messages;
 	}
 }
+*/

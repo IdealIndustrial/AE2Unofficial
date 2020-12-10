@@ -16,7 +16,7 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.tile.powersink;
+/*package appeng.tile.powersink;
 
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -69,4 +69,4 @@ public abstract class MekJoules extends RedstoneFlux implements IStrictEnergyAcc
 	{
 		return this.getPowerSides().contains( side );
 	}
-}
+}*/
