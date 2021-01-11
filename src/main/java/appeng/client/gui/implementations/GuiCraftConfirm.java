@@ -19,23 +19,6 @@
 package appeng.client.gui.implementations;
 
 
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import appeng.parts.reporting.PartPatternTerminalEx;
-import com.google.common.base.Joiner;
-
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-
 import appeng.api.AEApi;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
@@ -52,8 +35,20 @@ import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.parts.reporting.PartCraftingTerminal;
 import appeng.parts.reporting.PartPatternTerminal;
+import appeng.parts.reporting.PartPatternTerminalEx;
 import appeng.parts.reporting.PartTerminal;
 import appeng.util.Platform;
+import com.google.common.base.Joiner;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.*;
 
 
 public class GuiCraftConfirm extends AEBaseGui
@@ -106,12 +101,12 @@ public class GuiCraftConfirm extends AEBaseGui
 			this.OriginalGui = GuiBridge.GUI_PATTERN_TERMINAL;
 		}
 
-
 		if( te instanceof PartPatternTerminalEx)
 		{
 			this.OriginalGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
 		}
 	}
+
 	boolean isAutoStart()
 	{
 		return ( (ContainerCraftConfirm) this.inventorySlots ).isAutoStart();
@@ -255,6 +250,11 @@ public class GuiCraftConfirm extends AEBaseGui
 				GL11.glPushMatrix();
 				GL11.glScaled( 0.5, 0.5, 0.5 );
 
+				@SuppressWarnings( "rawtypes" )
+				final List stre = refStack.copy().getItemStack().getTooltip( mc.thePlayer, this.mc.gameSettings.advancedItemTooltips );
+				final String[] a = new String[ stre.size() ];
+				String[] dspToolTip2 = ( String[] ) stre.toArray( a );
+
 				final IAEItemStack stored = this.storage.findPrecise( refStack );
 				final IAEItemStack pendingStack = this.pending.findPrecise( refStack );
 				final IAEItemStack missingStack = this.missing.findPrecise( refStack );
@@ -295,9 +295,9 @@ public class GuiCraftConfirm extends AEBaseGui
 
 					if( this.tooltip == z - viewStart )
 					{
-						lineList.add( GuiText.FromStorage.getLocal() + ": " + Long.toString( stored.getStackSize() ) );
+						lineList.add( EnumChatFormatting.YELLOW + GuiText.FromStorage.getLocal() + ": " + Long.toString( stored.getStackSize() ) );
+						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
-
 					downY += 5;
 				}
 
@@ -320,9 +320,9 @@ public class GuiCraftConfirm extends AEBaseGui
 
 					if( this.tooltip == z - viewStart )
 					{
-						lineList.add( GuiText.Missing.getLocal() + ": " + Long.toString( missingStack.getStackSize() ) );
+						lineList.add( EnumChatFormatting.RED + GuiText.Missing.getLocal() + ": " + Long.toString( missingStack.getStackSize() ) );
+						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
-
 					red = true;
 					downY += 5;
 				}
@@ -345,7 +345,8 @@ public class GuiCraftConfirm extends AEBaseGui
 
 					if( this.tooltip == z - viewStart )
 					{
-						lineList.add( GuiText.ToCraft.getLocal() + ": " + Long.toString( pendingStack.getStackSize() ) );
+						lineList.add( EnumChatFormatting.GREEN + GuiText.ToCraft.getLocal() + ": " + Long.toString( pendingStack.getStackSize() ) );
+						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
 				}
 
