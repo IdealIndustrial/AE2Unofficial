@@ -54,6 +54,7 @@ public class SlotFake extends AppEngSlot
 	{
 		if( is != null )
 		{
+			is.stackSize = is.stackSize <= 0 ? 1 : is.stackSize;
 			is = is.copy();
 		}
 
