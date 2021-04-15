@@ -166,6 +166,7 @@ public class GuiImgButton extends GuiButton implements ITooltip
 			this.registerApp( 16 * 15, Settings.SCHEDULING_MODE, SchedulingMode.DEFAULT, ButtonToolTips.SchedulingMode, ButtonToolTips.SchedulingModeDefault );
 			this.registerApp( 16 * 15 + 1, Settings.SCHEDULING_MODE, SchedulingMode.ROUNDROBIN, ButtonToolTips.SchedulingMode, ButtonToolTips.SchedulingModeRoundRobin );
 			this.registerApp( 16 * 15 + 2, Settings.SCHEDULING_MODE, SchedulingMode.RANDOM, ButtonToolTips.SchedulingMode, ButtonToolTips.SchedulingModeRandom );
+			this.registerApp( 70, Settings.ACTIONS, ActionItems.ORE_FILTER, ButtonToolTips.OreFilter, ButtonToolTips.OreFilterHint );
 		}
 	}
 

@@ -134,6 +134,11 @@ public class PacketValueConfig extends AppEngPacket
 			final ContainerPriority pc = (ContainerPriority) c;
 			pc.setPriority( Integer.parseInt( this.Value ), player );
 		}
+		else if( this.Name.equals( "OreFilter" ) && c instanceof ContainerOreFilter )
+		{
+			final ContainerOreFilter fc = (ContainerOreFilter) c;
+			fc.setFilter(this.Value);
+		}
 		else if( this.Name.equals( "LevelEmitter.Value" ) && c instanceof ContainerLevelEmitter )
 		{
 			final ContainerLevelEmitter lvc = (ContainerLevelEmitter) c;

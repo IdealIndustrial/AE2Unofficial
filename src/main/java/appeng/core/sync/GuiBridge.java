@@ -62,10 +62,7 @@ import appeng.container.AEBaseContainer;
 import appeng.container.ContainerNull;
 import appeng.container.ContainerOpenContext;
 import appeng.core.stats.Achievements;
-import appeng.helpers.ICustomNameObject;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.IPriorityHost;
-import appeng.helpers.WirelessTerminalGuiObject;
+import appeng.helpers.*;
 import appeng.items.contents.QuartzKnifeObj;
 import appeng.parts.automation.PartFormationPlane;
 import appeng.parts.automation.PartLevelEmitter;
@@ -163,8 +160,10 @@ public enum GuiBridge implements IGuiHandler
 
 	GUI_CRAFTING_STATUS( ContainerCraftingStatus.class, ITerminalHost.class, GuiHostType.ITEM_OR_WORLD, SecurityPermissions.CRAFT ),
 
-	GUI_RENAMER( ContainerRenamer.class, ICustomNameObject.class, GuiHostType.WORLD, SecurityPermissions.BUILD );
-
+	GUI_RENAMER( ContainerRenamer.class, ICustomNameObject.class, GuiHostType.WORLD, SecurityPermissions.BUILD ),
+	
+	GUI_ORE_FILTER( ContainerOreFilter.class, IOreFilterable.class, GuiHostType.WORLD, SecurityPermissions.BUILD );
+	
 	private final Class tileClass;
 	private final Class containerClass;
 	private Class guiClass;

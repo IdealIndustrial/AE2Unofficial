@@ -138,4 +138,6 @@ public interface IMaterials
 	IItemDefinition blankPattern();
 
 	IItemDefinition cardPatternCapacity();
+	
+	IItemDefinition cardOreFilter();
 }

@@ -96,6 +96,9 @@ public enum GuiText
 
 	// renaming GUI label
 	Renamer,
+	
+	// ore dictionary filter GUI label
+	OreFilterLabel,
 
 	// Used in a ME Interface when no appropriate TileEntity was detected near it
 	Nothing;

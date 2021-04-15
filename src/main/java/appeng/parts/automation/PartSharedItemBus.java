@@ -28,45 +28,56 @@ import appeng.api.config.RedstoneMode;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.helpers.IOreFilterable;
 import appeng.me.GridAccessException;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 
+import java.util.function.Predicate;
 
-public abstract class PartSharedItemBus extends PartUpgradeable implements IGridTickable
+
+public abstract class PartSharedItemBus extends PartUpgradeable implements IGridTickable, IOreFilterable
 {
-
 	private final AppEngInternalAEInventory config = new AppEngInternalAEInventory( this, 9 );
 	private int adaptorHash = 0;
 	private InventoryAdaptor adaptor;
 	private boolean lastRedstone = false;
-
+	protected String oreFilterString = "";
+	protected Predicate<IAEItemStack> filterPredicate = null;
+	
 	public PartSharedItemBus( final ItemStack is )
 	{
 		super( is );
 	}
-
+	
 	@Override
 	public void upgradesChanged()
 	{
+		if (getInstalledUpgrades(Upgrades.ORE_FILTER) == 0) {
+			oreFilterString = "";
+			filterPredicate = null;
+		}
 		this.updateState();
 	}
-
+	
 	@Override
 	public void readFromNBT( final net.minecraft.nbt.NBTTagCompound extra )
 	{
 		super.readFromNBT( extra );
 		this.getConfig().readFromNBT( extra, "config" );
+		this.oreFilterString = extra.getString("filter");
 	}
-
+	
 	@Override
 	public void writeToNBT( final net.minecraft.nbt.NBTTagCompound extra )
 	{
 		super.writeToNBT( extra );
 		this.getConfig().writeToNBT( extra, "config" );
+		extra.setString("filter", this.oreFilterString);
 	}
-
+	
 	@Override
 	public IInventory getInventoryByName( final String name )
 	{
@@ -74,10 +85,10 @@ public abstract class PartSharedItemBus extends PartUpgradeable implements IGrid
 		{
 			return this.getConfig();
 		}
-
+		
 		return super.getInventoryByName( name );
 	}
-
+	
 	@Override
 	public void onNeighborChanged()
 	{
@@ -91,30 +102,30 @@ public abstract class PartSharedItemBus extends PartUpgradeable implements IGrid
 			}
 		}
 	}
-
+	
 	protected InventoryAdaptor getHandler()
 	{
 		final TileEntity self = this.getHost().getTile();
 		final TileEntity target = this.getTileEntity( self, self.xCoord + this.getSide().offsetX, self.yCoord + this.getSide().offsetY, self.zCoord + this.getSide().offsetZ );
-
+		
 		final int newAdaptorHash = Platform.generateTileHash( target );
-
+		
 		if( this.adaptorHash == newAdaptorHash && newAdaptorHash != 0 )
 		{
 			return this.adaptor;
 		}
-
+		
 		this.adaptorHash = newAdaptorHash;
 		this.adaptor = InventoryAdaptor.getAdaptor( target, this.getSide().getOpposite() );
-
+		
 		return this.adaptor;
 	}
-
+	
 	protected int availableSlots()
 	{
 		return Math.min( 1 + this.getInstalledUpgrades( Upgrades.CAPACITY ) * 4, this.getConfig().getSizeInventory() );
 	}
-
+	
 	protected int calculateItemsToSend()
 	{
 		switch( this.getInstalledUpgrades( Upgrades.SPEED ) )
@@ -132,7 +143,7 @@ public abstract class PartSharedItemBus extends PartUpgradeable implements IGrid
 				return 96;
 		}
 	}
-
+	
 	/**
 	 * Checks if the bus can actually do something.
 	 *
@@ -146,10 +157,10 @@ public abstract class PartSharedItemBus extends PartUpgradeable implements IGrid
 		final World world = self.getWorldObj();
 		final int xCoordinate = self.xCoord + this.getSide().offsetX;
 		final int zCoordinate = self.zCoord + this.getSide().offsetZ;
-
+		
 		return world != null && world.getChunkProvider().chunkExists( xCoordinate >> 4, zCoordinate >> 4 );
 	}
-
+	
 	private void updateState()
 	{
 		try
@@ -168,23 +179,34 @@ public abstract class PartSharedItemBus extends PartUpgradeable implements IGrid
 			// :P
 		}
 	}
-
+	
 	private TileEntity getTileEntity( final TileEntity self, final int x, final int y, final int z )
 	{
 		final World w = self.getWorldObj();
-
+		
 		if( w.getChunkProvider().chunkExists( x >> 4, z >> 4 ) )
 		{
 			return w.getTileEntity( x, y, z );
 		}
-
+		
 		return null;
 	}
-
+	
 	protected abstract TickRateModulation doBusWork();
-
+	
 	AppEngInternalAEInventory getConfig()
 	{
 		return this.config;
+	}
+	
+	@Override
+	public String getFilter() {
+		return oreFilterString;
+	}
+	
+	@Override
+	public void setFilter(String filter) {
+		oreFilterString = filter;
+		filterPredicate = null;
 	}
 }

@@ -233,6 +233,7 @@ gui.appliedenergistics2.Fuzzy=Fuzzy
 gui.appliedenergistics2.SmallFontCraft=Craft
 gui.appliedenergistics2.LargeFontCraft=+
 gui.appliedenergistics2.Renamer=Custom Name: (Enter to set)
+gui.appliedenergistics2.OreFilterLabel=Ore Dictionary filter
 gui.appliedenergistics2.Nothing=Nothing
 
 // GUI Tooltips
@@ -329,6 +330,8 @@ gui.tooltips.appliedenergistics2.SchedulingModeRandom=Export items in random mod
 gui.tooltips.appliedenergistics2.ItemsStored=Items Stored: %s
 gui.tooltips.appliedenergistics2.ItemsRequestable=Items Requestable: %s
 gui.tooltips.appliedenergistics2.P2PFrequency=Frequency: %s
+gui.tooltips.appliedenergistics2.OreFilterHint=Filter items using Ore Dictionary names
+gui.tooltips.appliedenergistics2.OreFilter=Ore Dictionary filter
 
 // Units
 gui.appliedenergistics2.units.appliedenergstics=AE
@@ -396,6 +399,7 @@ item.appliedenergistics2.ItemMaterial.CardFuzzy.name=Fuzzy Card
 item.appliedenergistics2.ItemMaterial.CardInverter.name=Inverter Card
 item.appliedenergistics2.ItemMaterial.CardRedstone.name=Redstone Card
 item.appliedenergistics2.ItemMaterial.CardSpeed.name=Acceleration Card
+item.appliedenergistics2.ItemMaterial.CardOreFilter.name=Ore Dictionary Filter Card
 item.appliedenergistics2.ItemMaterial.Cell2SpatialPart.name=2³ Spatial Component
 item.appliedenergistics2.ItemMaterial.Cell16SpatialPart.name=16³ Spatial Component
 item.appliedenergistics2.ItemMaterial.Cell128SpatialPart.name=128³ Spatial Component

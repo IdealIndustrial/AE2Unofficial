@@ -116,7 +116,8 @@ public enum MaterialType
 
 	BlankPattern( 52 ),
 	CardCrafting( 53 ),
-	CardPatternCapacity( 54 );
+	CardPatternCapacity( 54 ),
+	CardOreFilter( 55 );
 
 	private final EnumSet<AEFeature> features;
 	// IIcon for the material.

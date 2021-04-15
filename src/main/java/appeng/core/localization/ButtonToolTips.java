@@ -64,7 +64,7 @@ public enum ButtonToolTips
 	// Used in the tooltips of the items in the terminal, when moused over
 	ItemsStored, ItemsRequestable, P2PFrequency,
 
-	SchedulingMode, SchedulingModeDefault, SchedulingModeRoundRobin, SchedulingModeRandom;
+	SchedulingMode, SchedulingModeDefault, SchedulingModeRoundRobin, SchedulingModeRandom, OreFilter, OreFilterHint;
 
 	private final String root;
 

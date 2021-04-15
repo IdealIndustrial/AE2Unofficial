@@ -19,23 +19,22 @@
 package appeng.parts.automation;
 
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IUpgradeModule;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public abstract class UpgradeInventory extends AppEngInternalInventory implements IAEAppEngInventory
 {
 	private final IAEAppEngInventory parent;
-
+	
 	private boolean cached = false;
 	private int fuzzyUpgrades = 0;
 	private int speedUpgrades = 0;
@@ -43,27 +42,28 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 	private int capacityUpgrades = 0;
 	private int inverterUpgrades = 0;
 	private int craftingUpgrades = 0;
+	private int oreFilterUpgrades = 0;
 	private int patternCapacityUpgrades = 0;
-
+	
 	public UpgradeInventory( final IAEAppEngInventory parent, final int s )
 	{
 		super( null, s );
 		this.setTileEntity( this );
 		this.parent = parent;
 	}
-
+	
 	@Override
 	protected boolean eventsEnabled()
 	{
 		return true;
 	}
-
+	
 	@Override
 	public int getInventoryStackLimit()
 	{
 		return 1;
 	}
-
+	
 	@Override
 	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
 	{
@@ -82,14 +82,14 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 		}
 		return false;
 	}
-
+	
 	public int getInstalledUpgrades( final Upgrades u )
 	{
 		if( !this.cached )
 		{
 			this.updateUpgradeInfo();
 		}
-
+		
 		switch( u )
 		{
 			case PATTERN_CAPACITY:
@@ -106,24 +106,27 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 				return this.inverterUpgrades;
 			case CRAFTING:
 				return this.craftingUpgrades;
+			case ORE_FILTER:
+				return this.oreFilterUpgrades;
 			default:
 				return 0;
 		}
 	}
-
+	
 	public abstract int getMaxInstalled( Upgrades upgrades );
-
+	
 	private void updateUpgradeInfo()
 	{
 		this.cached = true;
-		this.patternCapacityUpgrades = this.inverterUpgrades = this.capacityUpgrades = this.redstoneUpgrades = this.speedUpgrades = this.fuzzyUpgrades = this.craftingUpgrades = 0;
+		this.patternCapacityUpgrades = this.inverterUpgrades = this.capacityUpgrades = this.redstoneUpgrades = this.speedUpgrades = this.fuzzyUpgrades = this.craftingUpgrades = this.oreFilterUpgrades = 0;
+		
 		for( final ItemStack is : this )
 		{
 			if( is == null || is.getItem() == null || !( is.getItem() instanceof IUpgradeModule ) )
 			{
 				continue;
 			}
-
+			
 			final Upgrades myUpgrade = ( (IUpgradeModule) is.getItem() ).getType( is );
 			switch( myUpgrade )
 			{
@@ -148,11 +151,14 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 				case CRAFTING:
 					this.craftingUpgrades++;
 					break;
+				case ORE_FILTER:
+					this.oreFilterUpgrades++;
+					break;
 				default:
 					break;
 			}
 		}
-
+		
 		this.capacityUpgrades = Math.min( this.capacityUpgrades, this.getMaxInstalled( Upgrades.CAPACITY ) );
 		this.fuzzyUpgrades = Math.min( this.fuzzyUpgrades, this.getMaxInstalled( Upgrades.FUZZY ) );
 		this.redstoneUpgrades = Math.min( this.redstoneUpgrades, this.getMaxInstalled( Upgrades.REDSTONE ) );
@@ -160,21 +166,22 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 		this.inverterUpgrades = Math.min( this.inverterUpgrades, this.getMaxInstalled( Upgrades.INVERTER ) );
 		this.craftingUpgrades = Math.min( this.craftingUpgrades, this.getMaxInstalled( Upgrades.CRAFTING ) );
 		this.patternCapacityUpgrades = Math.min( this.patternCapacityUpgrades, this.getMaxInstalled( Upgrades.PATTERN_CAPACITY ) );
+		this.oreFilterUpgrades = Math.min( this.oreFilterUpgrades, this.getMaxInstalled( Upgrades.ORE_FILTER ) );
 	}
-
+	
 	@Override
 	public void readFromNBT( final NBTTagCompound target )
 	{
 		super.readFromNBT( target );
 		this.updateUpgradeInfo();
 	}
-
+	
 	@Override
 	public void saveChanges()
 	{
 		this.parent.saveChanges();
 	}
-
+	
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
