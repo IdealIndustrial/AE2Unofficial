@@ -87,6 +87,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cofh.api.transport.IItemDuct;
 
 import java.util.*;
 
@@ -94,11 +95,11 @@ import java.util.*;
 public class DualityInterface
 		implements IGridTickable, IStorageMonitorable, IInventoryDestination, IAEAppEngInventory, IConfigManagerHost, ICraftingProvider, IUpgradeableHost, IPriorityHost
 {
-
+	
 	public static final int NUMBER_OF_STORAGE_SLOTS = 9;
 	public static final int NUMBER_OF_CONFIG_SLOTS = 9;
 	public static final int NUMBER_OF_PATTERN_SLOTS = 9;
-
+	
 	private static final Collection<Block> BAD_BLOCKS = new HashSet<Block>( 100 );
 	private final int[] sides = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	private final IAEItemStack[] requireWork = { null, null, null, null, null, null, null, null, null };
@@ -121,33 +122,33 @@ public class DualityInterface
 	private List<ItemStack> waitingToSend = null;
 	private IMEInventory<IAEItemStack> destination;
 	private boolean isWorking = false;
-
+	
 	public DualityInterface( final AENetworkProxy networkProxy, final IInterfaceHost ih )
 	{
 		this.gridProxy = networkProxy;
 		this.gridProxy.setFlags( GridFlags.REQUIRE_CHANNEL );
-
+		
 		this.upgrades = new StackUpgradeInventory( this.gridProxy.getMachineRepresentation(), this, 4 );
 		this.cm.registerSetting( Settings.BLOCK, YesNo.NO );
 		this.cm.registerSetting( Settings.INTERFACE_TERMINAL, YesNo.YES );
-
+		
 		this.iHost = ih;
 		this.craftingTracker = new MultiCraftingTracker( this.iHost, 9 );
-
+		
 		final MachineSource actionSource = new MachineSource( this.iHost );
 		this.mySource = actionSource;
 		this.fluids.setChangeSource( actionSource );
 		this.items.setChangeSource( actionSource );
-
+		
 		this.interfaceRequestSource = new InterfaceRequestSource(this.iHost);
 	}
-
+	
 	@Override
 	public void saveChanges()
 	{
 		this.iHost.saveChanges();
 	}
-
+	
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
@@ -155,7 +156,7 @@ public class DualityInterface
 		{
 			return;
 		}
-
+		
 		if( inv == this.config )
 		{
 			this.readConfig();
@@ -167,11 +168,11 @@ public class DualityInterface
 		else if( inv == this.storage && slot >= 0 )
 		{
 			final boolean had = this.hasWorkToDo();
-
+			
 			this.updatePlan( slot );
-
+			
 			final boolean now = this.hasWorkToDo();
-
+			
 			if( had != now )
 			{
 				try
@@ -192,7 +193,7 @@ public class DualityInterface
 			}
 		}
 	}
-
+	
 	public void writeToNBT( final NBTTagCompound data )
 	{
 		this.config.writeToNBT( data, "config" );
@@ -202,7 +203,7 @@ public class DualityInterface
 		this.cm.writeToNBT( data );
 		this.craftingTracker.writeToNBT( data );
 		data.setInteger( "priority", this.priority );
-
+		
 		final NBTTagList waitingToSend = new NBTTagList();
 		if( this.waitingToSend != null )
 		{
@@ -215,7 +216,7 @@ public class DualityInterface
 		}
 		data.setTag( "waitingToSend", waitingToSend );
 	}
-
+	
 	public void readFromNBT( final NBTTagCompound data )
 	{
 		this.waitingToSend = null;
@@ -232,7 +233,7 @@ public class DualityInterface
 				}
 			}
 		}
-
+		
 		this.craftingTracker.readFromNBT( data );
 		this.upgrades.readFromNBT( data, "upgrades" );
 		this.config.readFromNBT( data, "config" );
@@ -243,21 +244,21 @@ public class DualityInterface
 		this.readConfig();
 		this.updateCraftingList();
 	}
-
+	
 	private void addToSendList( final ItemStack is )
 	{
 		if( is == null )
 		{
 			return;
 		}
-
+		
 		if( this.waitingToSend == null )
 		{
 			this.waitingToSend = new LinkedList<ItemStack>();
 		}
-
+		
 		this.waitingToSend.add( is );
-
+		
 		try
 		{
 			this.gridProxy.getTick().wakeDevice( this.gridProxy.getNode() );
@@ -267,11 +268,11 @@ public class DualityInterface
 			// :P
 		}
 	}
-
+	
 	private void readConfig()
 	{
 		this.hasConfig = false;
-
+		
 		for( final ItemStack p : this.config )
 		{
 			if( p != null )
@@ -280,16 +281,16 @@ public class DualityInterface
 				break;
 			}
 		}
-
+		
 		final boolean had = this.hasWorkToDo();
-
+		
 		for( int x = 0; x < NUMBER_OF_CONFIG_SLOTS; x++ )
 		{
 			this.updatePlan( x );
 		}
-
+		
 		final boolean has = this.hasWorkToDo();
-
+		
 		if( had != has )
 		{
 			try
@@ -308,20 +309,20 @@ public class DualityInterface
 				// :P
 			}
 		}
-
+		
 		this.notifyNeighbors();
 	}
-
+	
 	private void updateCraftingList()
 	{
-
+		
 		final boolean[] accountedFor = new boolean[patterns.getSizeInventory()];
-
+		
 		if( !this.gridProxy.isReady() )
 		{
 			return;
 		}
-
+		
 		if( this.craftingList != null )
 		{
 			final Iterator<ICraftingPatternDetails> i = this.craftingList.iterator();
@@ -329,7 +330,7 @@ public class DualityInterface
 			{
 				final ICraftingPatternDetails details = i.next();
 				boolean found = false;
-
+				
 				for( int x = 0; x < accountedFor.length; x++ )
 				{
 					final ItemStack is = this.patterns.getStackInSlot( x );
@@ -338,14 +339,14 @@ public class DualityInterface
 						accountedFor[x] = found = true;
 					}
 				}
-
+				
 				if( !found )
 				{
 					i.remove();
 				}
 			}
 		}
-
+		
 		for( int x = 0; x < accountedFor.length; x++ )
 		{
 			if( !accountedFor[x] )
@@ -353,7 +354,7 @@ public class DualityInterface
 				this.addToCraftingList( this.patterns.getStackInSlot( x ) );
 			}
 		}
-
+		
 		try
 		{
 			this.gridProxy.getGrid().postEvent( new MENetworkCraftingPatternChange( this, this.gridProxy.getNode() ) );
@@ -363,7 +364,7 @@ public class DualityInterface
 			// :P
 		}
 	}
-
+	
 	private boolean hasWorkToDo()
 	{
 		if( this.hasItemsToSend() )
@@ -379,11 +380,11 @@ public class DualityInterface
 					return true;
 				}
 			}
-
+			
 			return false;
 		}
 	}
-
+	
 	private void updatePlan( final int slot )
 	{
 		IAEItemStack req = this.config.getAEStackInSlot( slot );
@@ -392,9 +393,9 @@ public class DualityInterface
 			this.config.setInventorySlotContents( slot, null );
 			req = null;
 		}
-
+		
 		final ItemStack Stored = this.storage.getStackInSlot( slot );
-
+		
 		if( req == null && Stored != null )
 		{
 			final IAEItemStack work = AEApi.instance().storage().createItemStack( Stored );
@@ -425,12 +426,12 @@ public class DualityInterface
 				return;
 			}
 		}
-
+		
 		// else
-
+		
 		this.requireWork[slot] = null;
 	}
-
+	
 	public void notifyNeighbors()
 	{
 		if( this.gridProxy.isActive() )
@@ -445,43 +446,43 @@ public class DualityInterface
 				// :P
 			}
 		}
-
+		
 		final TileEntity te = this.iHost.getTileEntity();
 		if( te != null && te.getWorldObj() != null )
 		{
 			Platform.notifyBlocksOfNeighbors( te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord );
 		}
 	}
-
+	
 	private void addToCraftingList( final ItemStack is )
 	{
 		if( is == null )
 		{
 			return;
 		}
-
+		
 		if( is.getItem() instanceof ICraftingPatternItem )
 		{
 			final ICraftingPatternItem cpi = (ICraftingPatternItem) is.getItem();
 			final ICraftingPatternDetails details = cpi.getPatternForItem( is, this.iHost.getTileEntity().getWorldObj() );
-
+			
 			if( details != null )
 			{
 				if( this.craftingList == null )
 				{
 					this.craftingList = new LinkedList<ICraftingPatternDetails>();
 				}
-
+				
 				this.craftingList.add( details );
 			}
 		}
 	}
-
+	
 	private boolean hasItemsToSend()
 	{
 		return this.waitingToSend != null && !this.waitingToSend.isEmpty();
 	}
-
+	
 	@Override
 	public boolean canInsert( final ItemStack stack )
 	{
@@ -496,17 +497,17 @@ public class DualityInterface
 		// return true;
 		// return after.stackSize != stack.stackSize;
 	}
-
+	
 	public IInventory getConfig()
 	{
 		return this.config;
 	}
-
+	
 	public IInventory getPatterns()
 	{
 		return this.patterns;
 	}
-
+	
 	public void gridChanged()
 	{
 		try
@@ -519,25 +520,25 @@ public class DualityInterface
 			this.items.setInternal( new NullInventory<IAEItemStack>() );
 			this.fluids.setInternal( new NullInventory<IAEFluidStack>() );
 		}
-
+		
 		this.notifyNeighbors();
 	}
-
+	
 	public AECableType getCableConnectionType( final ForgeDirection dir )
 	{
 		return AECableType.SMART;
 	}
-
+	
 	public DimensionalCoord getLocation()
 	{
 		return new DimensionalCoord( this.iHost.getTileEntity() );
 	}
-
+	
 	public IInventory getInternalInventory()
 	{
 		return this.storage;
 	}
-
+	
 	public void markDirty()
 	{
 		for( int slot = 0; slot < this.storage.getSizeInventory(); slot++ )
@@ -545,18 +546,18 @@ public class DualityInterface
 			this.onChangeInventory( this.storage, slot, InvOperation.markDirty, null, null );
 		}
 	}
-
+	
 	public int[] getAccessibleSlotsFromSide( final int side )
 	{
 		return this.sides;
 	}
-
+	
 	@Override
 	public TickingRequest getTickingRequest( final IGridNode node )
 	{
 		return new TickingRequest( TickRates.Interface.getMin(), TickRates.Interface.getMax(), !this.hasWorkToDo(), true );
 	}
-
+	
 	@Override
 	public TickRateModulation tickingRequest( final IGridNode node, final int ticksSinceLastCall )
 	{
@@ -564,31 +565,31 @@ public class DualityInterface
 		{
 			return TickRateModulation.SLEEP;
 		}
-
+		
 		if( this.hasItemsToSend() )
 		{
 			this.pushItemsOut( this.iHost.getTargets() );
 		}
-
+		
 		final boolean couldDoWork = this.updateStorage();
 		return this.hasWorkToDo() ? ( couldDoWork ? TickRateModulation.URGENT : TickRateModulation.SLOWER ) : TickRateModulation.SLEEP;
 	}
-
+	
 	private void pushItemsOut( final EnumSet<ForgeDirection> possibleDirections )
 	{
 		if( !this.hasItemsToSend() )
 		{
 			return;
 		}
-
+		
 		final TileEntity tile = this.iHost.getTileEntity();
 		final World w = tile.getWorldObj();
-
+		
 		final Iterator<ItemStack> i = this.waitingToSend.iterator();
 		while( i.hasNext() )
 		{
 			ItemStack whatToSend = i.next();
-
+			
 			for( final ForgeDirection s : possibleDirections )
 			{
 				final TileEntity te = w.getTileEntity( tile.xCoord + s.offsetX, tile.yCoord + s.offsetY, tile.zCoord + s.offsetZ );
@@ -596,44 +597,48 @@ public class DualityInterface
 				{
 					continue;
 				}
-
+				
 				final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( te, s.getOpposite() );
+				ItemStack Result = whatToSend;
 				if( ad != null )
 				{
-					final ItemStack Result = ad.addItems( whatToSend );
-
-					if( Result == null )
-					{
-						whatToSend = null;
-					}
-					else
-					{
-						whatToSend.stackSize -= whatToSend.stackSize - Result.stackSize;
-					}
-
-					if( whatToSend == null )
-					{
-						break;
-					}
+					Result = ad.addItems( whatToSend );
+				}
+				else if (te instanceof IItemDuct)
+				{
+					Result = ((IItemDuct)te).insertItem(s.getOpposite(), whatToSend);
+				}
+				if( Result == null )
+				{
+					whatToSend = null;
+				}
+				else
+				{
+					whatToSend.stackSize -= whatToSend.stackSize - Result.stackSize;
+				}
+				
+				if( whatToSend == null )
+				{
+					break;
 				}
 			}
-
+			
 			if( whatToSend == null )
 			{
 				i.remove();
 			}
 		}
-
+		
 		if( this.waitingToSend.isEmpty() )
 		{
 			this.waitingToSend = null;
 		}
 	}
-
+	
 	private boolean updateStorage()
 	{
 		boolean didSomething = false;
-
+		
 		for( int x = 0; x < NUMBER_OF_STORAGE_SLOTS; x++ )
 		{
 			if( this.requireWork[x] != null )
@@ -641,28 +646,28 @@ public class DualityInterface
 				didSomething = this.usePlan( x, this.requireWork[x] ) || didSomething;
 			}
 		}
-
+		
 		return didSomething;
 	}
-
+	
 	private boolean usePlan( final int x, final IAEItemStack itemStack )
 	{
 		final InventoryAdaptor adaptor = this.getAdaptor( x );
 		this.isWorking = true;
-
+		
 		boolean changed = false;
 		try
 		{
 			this.destination = this.gridProxy.getStorage().getItemInventory();
 			final IEnergySource src = this.gridProxy.getEnergy();
-
+			
 			if( itemStack.getStackSize() < 0 )
 			{
 				IAEItemStack toStore = itemStack.copy();
 				toStore.setStackSize( -toStore.getStackSize() );
-
+				
 				long diff = toStore.getStackSize();
-
+				
 				// make sure strange things didn't happen...
 				final ItemStack canExtract = adaptor.simulateRemove( (int) diff, toStore.getItemStack(), null );
 				if( canExtract == null || canExtract.stackSize != diff )
@@ -670,14 +675,14 @@ public class DualityInterface
 					changed = true;
 					throw new GridAccessException();
 				}
-
+				
 				toStore = Platform.poweredInsert( src, this.destination, toStore, this.interfaceRequestSource );
-
+				
 				if( toStore != null )
 				{
 					diff -= toStore.getStackSize();
 				}
-
+				
 				if( diff != 0 )
 				{
 					// extract items!
@@ -705,7 +710,7 @@ public class DualityInterface
 					changed = true;
 					throw new GridAccessException();
 				}
-
+				
 				final IAEItemStack acquired = Platform.poweredExtraction( src, this.destination, itemStack, this.interfaceRequestSource );
 				if( acquired != null )
 				{
@@ -727,21 +732,21 @@ public class DualityInterface
 		{
 			// :P
 		}
-
+		
 		if( changed )
 		{
 			this.updatePlan( x );
 		}
-
+		
 		this.isWorking = false;
 		return changed;
 	}
-
+	
 	private InventoryAdaptor getAdaptor( final int slot )
 	{
 		return new AdaptorIInventory( this.slotInv.getWrapper( slot ) );
 	}
-
+	
 	private boolean handleCrafting( final int x, final InventoryAdaptor d, final IAEItemStack itemStack )
 	{
 		try
@@ -755,10 +760,10 @@ public class DualityInterface
 		{
 			// :P
 		}
-
+		
 		return false;
 	}
-
+	
 	@Override
 	public int getInstalledUpgrades( final Upgrades u )
 	{
@@ -768,13 +773,13 @@ public class DualityInterface
 		}
 		return this.upgrades.getInstalledUpgrades( u );
 	}
-
+	
 	@Override
 	public TileEntity getTile()
 	{
 		return (TileEntity) ( this.iHost instanceof TileEntity ? this.iHost : null );
 	}
-
+	
 	@Override
 	public IMEMonitor<IAEItemStack> getItemInventory()
 	{
@@ -782,15 +787,15 @@ public class DualityInterface
 		{
 			return new InterfaceInventory( this );
 		}
-
+		
 		return this.items;
 	}
-
+	
 	private boolean hasConfig()
 	{
 		return this.hasConfig;
 	}
-
+	
 	@Override
 	public IInventory getInventoryByName( final String name )
 	{
@@ -798,36 +803,36 @@ public class DualityInterface
 		{
 			return this.storage;
 		}
-
+		
 		if( name.equals( "patterns" ) )
 		{
 			return this.patterns;
 		}
-
+		
 		if( name.equals( "config" ) )
 		{
 			return this.config;
 		}
-
+		
 		if( name.equals( "upgrades" ) )
 		{
 			return this.upgrades;
 		}
-
+		
 		return null;
 	}
-
+	
 	public IInventory getStorage()
 	{
 		return this.storage;
 	}
-
+	
 	@Override
 	public appeng.api.util.IConfigManager getConfigManager()
 	{
 		return this.cm;
 	}
-
+	
 	@Override
 	public void updateSetting( final IConfigManager manager, final Enum settingName, final Enum newValue )
 	{
@@ -835,10 +840,10 @@ public class DualityInterface
 		{
 			this.cancelCrafting();
 		}
-
+		
 		this.markDirty();
 	}
-
+	
 	@Override
 	public IMEMonitor<IAEFluidStack> getFluidInventory()
 	{
@@ -846,33 +851,33 @@ public class DualityInterface
 		{
 			return null;
 		}
-
+		
 		return this.fluids;
 	}
-
+	
 	private void cancelCrafting()
 	{
 		this.craftingTracker.cancel();
 	}
-
+	
 	public IStorageMonitorable getMonitorable( final ForgeDirection side, final BaseActionSource src, final IStorageMonitorable myInterface )
 	{
 		if( Platform.canAccess( this.gridProxy, src ) )
 		{
 			return myInterface;
 		}
-
+		
 		final DualityInterface di = this;
-
+		
 		return new IStorageMonitorable()
 		{
-
+			
 			@Override
 			public IMEMonitor<IAEItemStack> getItemInventory()
 			{
 				return new InterfaceInventory( di );
 			}
-
+			
 			@Override
 			public IMEMonitor<IAEFluidStack> getFluidInventory()
 			{
@@ -889,6 +894,11 @@ public class DualityInterface
 		}
 		return true;
 	}
+	private boolean inventoryCountsAsEmpty(TileEntity te, InventoryAdaptor ad)
+	{
+		return te.getBlockType().getUnlocalizedName().equals("gt.blockmachines") && gtMachineHasOnlyCircuit(ad);
+	}
+	
 	@Override
 	public boolean pushPattern( final ICraftingPatternDetails patternDetails, final InventoryCrafting table )
 	{
@@ -896,10 +906,10 @@ public class DualityInterface
 		{
 			return false;
 		}
-
+		
 		final TileEntity tile = this.iHost.getTileEntity();
 		final World w = tile.getWorldObj();
-
+		
 		final EnumSet<ForgeDirection> possibleDirections = this.iHost.getTargets();
 		for( final ForgeDirection s : possibleDirections )
 		{
@@ -918,7 +928,7 @@ public class DualityInterface
 					continue;
 				}
 			}
-
+			
 			if( te instanceof ICraftingMachine )
 			{
 				final ICraftingMachine cm = (ICraftingMachine) te;
@@ -931,15 +941,13 @@ public class DualityInterface
 					continue;
 				}
 			}
-
+			
 			final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( te, s.getOpposite() );
 			if( ad != null )
 			{
-				if (this.isBlocking() && ad.containsItems()) {
-					if (!te.getBlockType().getUnlocalizedName().equals("gt.blockmachines") || !gtMachineHasOnlyCircuit(ad))
-						continue;
-				}
-
+				if (this.isBlocking() && ad.containsItems() && !inventoryCountsAsEmpty(te, ad))
+					continue;
+				
 				if( this.acceptsItems( ad, table ) )
 				{
 					for( int x = 0; x < table.getSizeInventory(); x++ )
@@ -947,19 +955,39 @@ public class DualityInterface
 						final ItemStack is = table.getStackInSlot( x );
 						if( is != null )
 						{
-							final ItemStack added = ad.addItems( is );
-							this.addToSendList( added );
+							this.addToSendList( ad.addItems( is ) );
 						}
 					}
 					this.pushItemsOut( possibleDirections );
 					return true;
 				}
 			}
+			else if (te instanceof IItemDuct)
+			{
+				boolean hadAcceptedSome = false;
+				for( int x = 0; x < table.getSizeInventory(); x++ )
+				{
+					final ItemStack is = table.getStackInSlot( x );
+					if (is != null)
+					{
+						final ItemStack rest = ((IItemDuct)te).insertItem(s.getOpposite(), is);
+						if (!hadAcceptedSome && rest != null && rest.stackSize == is.stackSize)
+							break; // conduit should accept all the pattern or nothing.
+						hadAcceptedSome = true;
+						this.addToSendList(rest);
+					}
+				}
+				if (hadAcceptedSome)
+				{
+					this.pushItemsOut(possibleDirections);
+					return true;
+				}
+			}
 		}
-
+		
 		return false;
 	}
-
+	
 	@Override
 	public boolean isBusy()
 	{
@@ -967,48 +995,48 @@ public class DualityInterface
 		{
 			return true;
 		}
-
+		
 		boolean busy = false;
-
+		
 		if( this.isBlocking() )
 		{
 			final EnumSet<ForgeDirection> possibleDirections = this.iHost.getTargets();
 			final TileEntity tile = this.iHost.getTileEntity();
 			final World w = tile.getWorldObj();
-
+			
 			boolean allAreBusy = true;
-
+			
 			for( final ForgeDirection s : possibleDirections )
 			{
 				final TileEntity te = w.getTileEntity( tile.xCoord + s.offsetX, tile.yCoord + s.offsetY, tile.zCoord + s.offsetZ );
-
+				
 				final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( te, s.getOpposite() );
 				if( ad != null )
 				{
-					if( ad.simulateRemove( 1, null, null ) == null )
+					if( ad.simulateRemove( 1, null, null ) == null || inventoryCountsAsEmpty(te, ad))
 					{
 						allAreBusy = false;
 						break;
 					}
 				}
 			}
-
+			
 			busy = allAreBusy;
 		}
-
+		
 		return busy;
 	}
-
+	
 	private boolean sameGrid( final IGrid grid ) throws GridAccessException
 	{
 		return grid == this.gridProxy.getGrid();
 	}
-
+	
 	private boolean isBlocking()
 	{
 		return this.cm.getSetting( Settings.BLOCK ) == YesNo.YES;
 	}
-
+	
 	private boolean acceptsItems( final InventoryAdaptor ad, final InventoryCrafting table )
 	{
 		for( int x = 0; x < table.getSizeInventory(); x++ )
@@ -1018,16 +1046,16 @@ public class DualityInterface
 			{
 				continue;
 			}
-
+			
 			if( ad.simulateAdd( is.copy() ) != null )
 			{
 				return false;
 			}
 		}
-
+		
 		return true;
 	}
-
+	
 	@Override
 	public void provideCrafting( final ICraftingProviderHelper craftingTracker )
 	{
@@ -1040,7 +1068,7 @@ public class DualityInterface
 			}
 		}
 	}
-
+	
 	public void addDrops( final List<ItemStack> drops )
 	{
 		if( this.waitingToSend != null )
@@ -1053,7 +1081,7 @@ public class DualityInterface
 				}
 			}
 		}
-
+		
 		for( final ItemStack is : this.upgrades )
 		{
 			if( is != null )
@@ -1061,7 +1089,7 @@ public class DualityInterface
 				drops.add( is );
 			}
 		}
-
+		
 		for( final ItemStack is : this.storage )
 		{
 			if( is != null )
@@ -1069,7 +1097,7 @@ public class DualityInterface
 				drops.add( is );
 			}
 		}
-
+		
 		for( final ItemStack is : this.patterns )
 		{
 			if( is != null )
@@ -1078,7 +1106,7 @@ public class DualityInterface
 			}
 		}
 	}
-
+	
 	public IUpgradeableHost getHost()
 	{
 		if(this.getPart() != null)
@@ -1091,25 +1119,25 @@ public class DualityInterface
 		}
 		return null;
 	}
-
+	
 	private IPart getPart()
 	{
 		return (IPart) ( this.iHost instanceof IPart ? this.iHost : null );
 	}
-
+	
 	public ImmutableSet<ICraftingLink> getRequestedJobs()
 	{
 		return this.craftingTracker.getRequestedJobs();
 	}
-
+	
 	public IAEItemStack injectCraftedItems( final ICraftingLink link, final IAEItemStack acquired, final Actionable mode )
 	{
 		final int slot = this.craftingTracker.getSlot( link );
-
+		
 		if( acquired != null && slot >= 0 && slot <= this.requireWork.length )
 		{
 			final InventoryAdaptor adaptor = this.getAdaptor( slot );
-
+			
 			if( mode == Actionable.SIMULATE )
 			{
 				return AEItemStack.create( adaptor.simulateAdd( acquired.getItemStack() ) );
@@ -1121,25 +1149,25 @@ public class DualityInterface
 				return is;
 			}
 		}
-
+		
 		return acquired;
 	}
-
+	
 	public void jobStateChange( final ICraftingLink link )
 	{
 		this.craftingTracker.jobStateChange( link );
 	}
-
+	
 	public String getTermName()
 	{
 		final TileEntity hostTile = this.iHost.getTileEntity();
 		final World hostWorld = hostTile.getWorldObj();
-
+		
 		if( ( (ICustomNameObject) this.iHost ).hasCustomName() )
 		{
 			return ( (ICustomNameObject) this.iHost ).getCustomName();
 		}
-
+		
 		final EnumSet<ForgeDirection> possibleDirections = this.iHost.getTargets();
 		for( final ForgeDirection direction : possibleDirections )
 		{
@@ -1147,12 +1175,12 @@ public class DualityInterface
 			final int yPos = hostTile.yCoord + direction.offsetY;
 			final int zPos = hostTile.zCoord + direction.offsetZ;
 			final TileEntity directedTile = hostWorld.getTileEntity( xPos, yPos, zPos );
-
+			
 			if( directedTile == null )
 			{
 				continue;
 			}
-
+			
 			if( directedTile instanceof IInterfaceHost )
 			{
 				try
@@ -1167,7 +1195,7 @@ public class DualityInterface
 					continue;
 				}
 			}
-
+			
 			final InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor( directedTile, direction.getOpposite() );
 			if( directedTile instanceof ICraftingMachine || adaptor != null )
 			{
@@ -1175,17 +1203,17 @@ public class DualityInterface
 				{
 					continue;
 				}
-
+				
 				if( directedTile instanceof ISidedInventory )
 				{
 					final int[] sides = ( (ISidedInventory) directedTile ).getAccessibleSlotsFromSide( direction.getOpposite().ordinal() );
-
+					
 					if( sides == null || sides.length == 0 )
 					{
 						continue;
 					}
 				}
-
+				
 				final Block directedBlock = hostWorld.getBlock( xPos, yPos, zPos );
 				ItemStack what = new ItemStack( directedBlock, 1, directedBlock.getDamageValue( hostWorld, xPos, yPos, zPos ) );
 				try
@@ -1210,12 +1238,12 @@ public class DualityInterface
 				{
 					BAD_BLOCKS.add( directedBlock ); // nope!
 				}
-
+				
 				if( what.getItem() != null )
 				{
 					return what.getUnlocalizedName();
 				}
-
+				
 				final Item item = Item.getItemFromBlock( directedBlock );
 				if( item == null )
 				{
@@ -1223,33 +1251,33 @@ public class DualityInterface
 				}
 			}
 		}
-
+		
 		return "Nothing";
 	}
-
+	
 	public long getSortValue()
 	{
 		final TileEntity te = this.iHost.getTileEntity();
 		return ( te.zCoord << 24 ) ^ ( te.xCoord << 8 ) ^ te.yCoord;
 	}
-
+	
 	public void initialize()
 	{
 		this.updateCraftingList();
 	}
-
+	
 	@Override
 	public int getPriority()
 	{
 		return this.priority;
 	}
-
+	
 	@Override
 	public void setPriority( final int newValue )
 	{
 		this.priority = newValue;
 		this.markDirty();
-
+		
 		try
 		{
 			this.gridProxy.getGrid().postEvent( new MENetworkCraftingPatternChange( this, this.gridProxy.getNode() ) );
@@ -1259,26 +1287,26 @@ public class DualityInterface
 			// :P
 		}
 	}
-
+	
 	private static class InterfaceRequestSource extends MachineSource
 	{
-
+		
 		public InterfaceRequestSource( final IActionHost v )
 		{
 			super( v );
 		}
 	}
-
-
+	
+	
 	private class InterfaceInventory extends MEMonitorIInventory
 	{
-
+		
 		public InterfaceInventory( final DualityInterface tileInterface )
 		{
 			super( new AdaptorIInventory( tileInterface.storage ) );
 			this.setActionSource( new MachineSource( DualityInterface.this.iHost ) );
 		}
-
+		
 		@Override
 		public IAEItemStack injectItems( final IAEItemStack input, final Actionable type, final BaseActionSource src )
 		{
@@ -1286,7 +1314,7 @@ public class DualityInterface
 			{
 				return input;
 			}
-
+			
 			return super.injectItems( input, type, src );
 		}
 
