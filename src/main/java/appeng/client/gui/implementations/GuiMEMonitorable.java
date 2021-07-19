@@ -19,17 +19,6 @@
 package appeng.client.gui.implementations;
 
 
-import java.io.IOException;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
@@ -41,11 +30,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.client.gui.AEBaseMEGui;
-import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.gui.widgets.GuiScrollbar;
-import appeng.client.gui.widgets.GuiTabButton;
-import appeng.client.gui.widgets.ISortSource;
-import appeng.client.gui.widgets.MEGuiTextField;
+import appeng.client.gui.widgets.*;
 import appeng.client.me.InternalSlotME;
 import appeng.client.me.ItemRepo;
 import appeng.container.implementations.ContainerMEMonitorable;
@@ -54,6 +39,7 @@ import appeng.container.slot.SlotCraftingMatrix;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.core.AEConfig;
 import appeng.core.AELog;
+import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.GuiBridge;
 import appeng.core.sync.network.NetworkHandler;
@@ -66,6 +52,15 @@ import appeng.parts.reporting.AbstractPartTerminal;
 import appeng.tile.misc.TileSecurity;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import java.io.IOException;
+import java.util.List;
 
 
 public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfigManagerHost
@@ -310,6 +305,7 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		this.searchField.setMaxStringLength( 25 );
 		this.searchField.setTextColor( 0xFFFFFF );
 		this.searchField.setVisible( true );
+		searchField.setMessage(ButtonToolTips.SearchStringTooltip.getLocal());
 
 		if( this.viewCell || this instanceof GuiWirelessTerm )
 		{
@@ -321,10 +317,15 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		final Enum setting = AEConfig.instance.settings.getSetting( Settings.SEARCH_MODE );
 		this.searchField.setFocused( SearchBoxMode.AUTOSEARCH == setting || SearchBoxMode.NEI_AUTOSEARCH == setting );
 
+		if (AEConfig.instance.preserveSearchBar || this.isSubGui())
+		{
+			this.searchField.setText(memoryText);
+			this.repo.setSearchString(memoryText);
+		}
+		this.repo.setSearchString( memoryText );
+
 		if( this.isSubGui() )
 		{
-			this.searchField.setText( memoryText );
-			this.repo.setSearchString( memoryText );
 			this.repo.updateView();
 			this.setScrollBar();
 		}
@@ -556,5 +557,12 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 	void setStandardSize( final int standardSize )
 	{
 		this.standardSize = standardSize;
+	}
+
+	@Override
+	public void drawScreen( final int mouseX, final int mouseY, final float btn ) {
+		super.drawScreen(mouseX, mouseY, btn);
+		if (AEConfig.instance.preserveSearchBar)
+			handleTooltip(mouseX, mouseY, searchField);
 	}
 }

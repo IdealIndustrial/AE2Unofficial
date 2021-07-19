@@ -169,25 +169,29 @@ public abstract class AEBaseGui extends GuiContainer
 		{
 			if( c instanceof ITooltip )
 			{
-				final ITooltip tooltip = (ITooltip) c;
-				final int x = tooltip.xPos(); // ((GuiImgButton) c).xPosition;
-				int y = tooltip.yPos(); // ((GuiImgButton) c).yPosition;
+				handleTooltip(mouseX, mouseY, (ITooltip) c);
+			}
+		}
+	}
 
-				if( x < mouseX && x + tooltip.getWidth() > mouseX && tooltip.isVisible() )
+	protected void handleTooltip(int mouseX, int mouseY, ITooltip c) {
+		final ITooltip tooltip = c;
+		final int x = tooltip.xPos(); // ((GuiImgButton) c).xPosition;
+		int y = tooltip.yPos(); // ((GuiImgButton) c).yPosition;
+
+		if( x < mouseX && x + tooltip.getWidth() > mouseX && tooltip.isVisible() )
+		{
+			if( y < mouseY && y + tooltip.getHeight() > mouseY)
+			{
+				if( y < 15 )
 				{
-					if( y < mouseY && y + tooltip.getHeight() > mouseY )
-					{
-						if( y < 15 )
-						{
-							y = 15;
-						}
+					y = 15;
+				}
 
-						final String msg = tooltip.getMessage();
-						if( msg != null )
-						{
-							this.drawTooltip( x + 11, y + 4, 0, msg );
-						}
-					}
+				final String msg = tooltip.getMessage();
+				if( msg != null )
+				{
+					this.drawTooltip( x + 11, y + 4, 0, msg );
 				}
 			}
 		}

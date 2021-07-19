@@ -88,6 +88,7 @@ public final class AEConfig extends Configuration implements IConfigurableObject
 	public boolean enableEffects = true;
 	public boolean useLargeFonts = false;
 	public boolean useColoredCraftingStatus;
+	public boolean preserveSearchBar = true;
 	public int wirelessTerminalBattery = 1600000;
 	public int entropyManipulatorBattery = 200000;
 	public int matterCannonBattery = 200000;
@@ -230,6 +231,7 @@ public final class AEConfig extends Configuration implements IConfigurableObject
 		this.enableEffects = this.get( "Client", "enableEffects", true ).getBoolean( true );
 		this.useLargeFonts = this.get( "Client", "useTerminalUseLargeFont", false ).getBoolean( false );
 		this.useColoredCraftingStatus = this.get( "Client", "useColoredCraftingStatus", true ).getBoolean( true );
+		this.preserveSearchBar = this.get( "Client", "preserveSearchBar", true ).getBoolean( true );
 
 		// load buttons..
 		for( int btnNum = 0; btnNum < 4; btnNum++ )

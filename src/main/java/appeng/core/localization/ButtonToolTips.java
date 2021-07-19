@@ -62,7 +62,7 @@ public enum ButtonToolTips
 	BlockPlacement, BlockPlacementYes, BlockPlacementNo,
 
 	// Used in the tooltips of the items in the terminal, when moused over
-	ItemsStored, ItemsRequestable, P2PFrequency,
+	ItemsStored, ItemsRequestable, P2PFrequency, SearchStringTooltip,
 
 	SchedulingMode, SchedulingModeDefault, SchedulingModeRoundRobin, SchedulingModeRandom, OreFilter, OreFilterHint;
 

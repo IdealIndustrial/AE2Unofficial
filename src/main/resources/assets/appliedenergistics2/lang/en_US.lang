@@ -333,6 +333,7 @@ gui.tooltips.appliedenergistics2.ItemsRequestable=Items Requestable: %s
 gui.tooltips.appliedenergistics2.P2PFrequency=Frequency: %s
 gui.tooltips.appliedenergistics2.OreFilterHint=Filter items using Ore Dictionary names
 gui.tooltips.appliedenergistics2.OreFilter=Ore Dictionary filter
+gui.tooltips.appliedenergistics2.SearchStringTooltip=Right click to clear the search bar
 
 // Units
 gui.appliedenergistics2.units.appliedenergstics=AE
