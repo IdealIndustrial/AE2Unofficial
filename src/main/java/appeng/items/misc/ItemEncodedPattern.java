@@ -19,18 +19,6 @@
 package appeng.items.misc;
 
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
-
 import appeng.api.AEApi;
 import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
@@ -42,6 +30,19 @@ import appeng.core.localization.GuiText;
 import appeng.helpers.PatternHelper;
 import appeng.items.AEBaseItem;
 import appeng.util.Platform;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.event.ForgeEventFactory;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 
 public class ItemEncodedPattern extends AEBaseItem implements ICraftingPatternItem
@@ -70,6 +71,9 @@ public class ItemEncodedPattern extends AEBaseItem implements ICraftingPatternIt
 	@Override
 	public boolean onItemUseFirst( final ItemStack stack, final EntityPlayer player, final World world, final int x, final int y, final int z, final int side, final float hitX, final float hitY, final float hitZ )
 	{
+		if( ForgeEventFactory.onItemUseStart( player, stack, 1 ) <= 0 )
+			return true;
+
 		return this.clearPattern( stack, player );
 	}
 
@@ -131,6 +135,12 @@ public class ItemEncodedPattern extends AEBaseItem implements ICraftingPatternIt
 			}
 
 			lines.add( ( first ? label : and ) + anOut.getStackSize() + ' ' + Platform.getItemDisplayName( anOut ) );
+			if (GuiScreen.isShiftKeyDown()) {
+				List l = anOut.getItemStack().getTooltip(player, displayMoreInfo);
+				if (!l.isEmpty())
+					l.remove(0);
+				lines.addAll(l);
+			}
 			first = false;
 		}
 
@@ -143,6 +153,12 @@ public class ItemEncodedPattern extends AEBaseItem implements ICraftingPatternIt
 			}
 
 			lines.add( ( first ? with : and ) + anIn.getStackSize() + ' ' + Platform.getItemDisplayName( anIn ) );
+			if (GuiScreen.isShiftKeyDown()) {
+				List l = anIn.getItemStack().getTooltip(player, displayMoreInfo);
+				if (!l.isEmpty())
+					l.remove(0);
+				lines.addAll(l);
+			}
 			first = false;
 		}
 
