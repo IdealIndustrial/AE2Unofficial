@@ -73,11 +73,11 @@ public interface ICellWorkbenchItem
 	 * @param is cell item
 	 * @return current ore dictionary filter
 	 */
-	String getOreFilter(ItemStack is);
+	default String getOreFilter(ItemStack is){ return ""; }
 
 	/**
 	 * @param is cell item
 	 * @param filter new ore dictionary filter
 	 */
-	void setOreFilter(ItemStack is, String filter);
+	default void setOreFilter(ItemStack is, String filter) {}
 }
