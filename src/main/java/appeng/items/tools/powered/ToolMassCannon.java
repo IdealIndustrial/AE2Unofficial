@@ -545,4 +545,15 @@ public class ToolMassCannon extends AEBasePoweredItem implements IStorageCell
 	{
 		return 0.5;
 	}
+
+
+	@Override
+	public String getOreFilter(ItemStack is) {
+		return Platform.openNbtData( is ).getString( "OreFilter" );
+	}
+
+	@Override
+	public void setOreFilter(ItemStack is, String filter) {
+		Platform.openNbtData( is ).setString("OreFilter", filter);
+	}
 }

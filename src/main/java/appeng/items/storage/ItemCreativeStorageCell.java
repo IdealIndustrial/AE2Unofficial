@@ -65,8 +65,15 @@ public class ItemCreativeStorageCell extends AEBaseItem implements ICellWorkbenc
 	}
 
 	@Override
-	public void setFuzzyMode( final ItemStack is, final FuzzyMode fzMode )
-	{
+	public void setFuzzyMode( final ItemStack is, final FuzzyMode fzMode ) {
+	}
 
+	@Override
+	public String getOreFilter(ItemStack is) {
+		return "";
+	}
+
+	@Override
+	public void setOreFilter(ItemStack is, String filter) {
 	}
 }

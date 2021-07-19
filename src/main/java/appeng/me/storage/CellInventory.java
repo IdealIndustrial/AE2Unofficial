@@ -613,4 +613,10 @@ public class CellInventory implements ICellInventory
 		}
 		return 3;
 	}
+
+	@Override
+	public String getOreFilter()
+	{
+		return this.cellType.getOreFilter( this.cellItem );
+	}
 }

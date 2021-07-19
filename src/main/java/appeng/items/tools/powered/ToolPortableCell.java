@@ -194,4 +194,15 @@ public class ToolPortableCell extends AEBasePoweredItem implements IStorageCell,
 	{
 		return new PortableCellViewer( is, x );
 	}
+
+
+	@Override
+	public String getOreFilter(ItemStack is) {
+		return Platform.openNbtData( is ).getString( "OreFilter" );
+	}
+
+	@Override
+	public void setOreFilter(ItemStack is, String filter) {
+		Platform.openNbtData( is ).setString("OreFilter", filter);
+	}
 }

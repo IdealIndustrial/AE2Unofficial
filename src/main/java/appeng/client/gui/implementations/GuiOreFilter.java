@@ -12,6 +12,7 @@ import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IOreFilterable;
 import appeng.parts.automation.PartSharedItemBus;
 import appeng.parts.misc.PartStorageBus;
+import appeng.tile.misc.TileCellWorkbench;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.InventoryPlayer;
 
@@ -65,6 +66,8 @@ public class GuiOreFilter extends AEBaseGui {
 				OriginalGui = GuiBridge.GUI_STORAGEBUS;
 			else if (target instanceof PartSharedItemBus)
 				OriginalGui = GuiBridge.GUI_BUS;
+			else if (target instanceof TileCellWorkbench)
+				OriginalGui = GuiBridge.GUI_CELL_WORKBENCH;
 			
 			if (OriginalGui != null)
 				NetworkHandler.instance.sendToServer( new PacketSwitchGuis( OriginalGui ) );
