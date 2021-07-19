@@ -22,6 +22,7 @@ package appeng.client.gui.implementations;
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
+import appeng.api.config.YesNo;
 import appeng.api.implementations.guiobjects.IPortableCell;
 import appeng.api.implementations.tiles.IMEChest;
 import appeng.api.implementations.tiles.IViewCellStorage;
@@ -91,6 +92,7 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 	private GuiImgButton SortDirBox;
 	private GuiImgButton searchBoxSettings;
 	private GuiImgButton terminalStyleBox;
+	private GuiImgButton searchStringSave;
 
 	public GuiMEMonitorable( final InventoryPlayer inventoryPlayer, final ITerminalHost te )
 	{
@@ -185,6 +187,10 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 				else if( btn == this.searchBoxSettings )
 				{
 					AEConfig.instance.settings.putSetting( iBtn.getSetting(), next );
+				}
+				else if( btn == this.searchStringSave )
+				{
+					AEConfig.instance.preserveSearchBar = next == YesNo.YES;
 				}
 				else
 				{
@@ -293,6 +299,9 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		offset += 20;
 
 		this.buttonList.add( this.searchBoxSettings = new GuiImgButton( this.guiLeft - 18, offset, Settings.SEARCH_MODE, AEConfig.instance.settings.getSetting( Settings.SEARCH_MODE ) ) );
+		offset += 20;
+
+		this.buttonList.add( this.searchStringSave = new GuiImgButton( this.guiLeft - 18, offset, Settings.SAVE_SEARCH, AEConfig.instance.preserveSearchBar ? YesNo.YES : YesNo.NO ) );
 		offset += 20;
 
 		if( !( this instanceof GuiMEPortableCell ) || this instanceof GuiWirelessTerm )
