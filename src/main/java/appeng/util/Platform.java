@@ -372,15 +372,15 @@ public class Platform
 		{
 			if( tile == null && type.getType() == GuiHostType.ITEM )
 			{
-				p.openGui( AppEng.instance(), type.ordinal() << 4, p.getEntityWorld(), p.inventory.currentItem, 0, 0 );
+				p.openGui( AppEng.instance(), type.ordinal() << 5 | (1 << 4), p.getEntityWorld(), p.inventory.currentItem, 0, 0 );
 			}
 			else if( tile == null || type.getType() == GuiHostType.ITEM )
 			{
-				p.openGui( AppEng.instance(), type.ordinal() << 4 | ( 1 << 3 ), p.getEntityWorld(), x, y, z );
+				p.openGui( AppEng.instance(), type.ordinal() << 5 | ( 1 << 3 ), p.getEntityWorld(), x, y, z );
 			}
 			else
 			{
-				p.openGui( AppEng.instance(), type.ordinal() << 4 | ( side.ordinal() ), tile.getWorldObj(), x, y, z );
+				p.openGui( AppEng.instance(), type.ordinal() << 5 | ( side.ordinal() ), tile.getWorldObj(), x, y, z );
 			}
 		}
 	}
@@ -1815,7 +1815,11 @@ public class Platform
 
 	public static ItemStack extractItemsByRecipe( final IEnergySource energySrc, final BaseActionSource mySrc, final IMEMonitor<IAEItemStack> src, final World w, final IRecipe r, final ItemStack output, final InventoryCrafting ci, final ItemStack providedTemplate, final int slot, final IItemList<IAEItemStack> items, final Actionable realForFake, final IPartitionList<IAEItemStack> filter )
 	{
-		if( energySrc.extractAEPower( 1, Actionable.SIMULATE, PowerMultiplier.CONFIG ) > 0.9 )
+		return extractItemsByRecipe(energySrc, mySrc, src, w, r, output, ci, providedTemplate, slot, items, realForFake, filter, 1);
+	}
+	public static ItemStack extractItemsByRecipe( final IEnergySource energySrc, final BaseActionSource mySrc, final IMEMonitor<IAEItemStack> src, final World w, final IRecipe r, final ItemStack output, final InventoryCrafting ci, final ItemStack providedTemplate, final int slot, final IItemList<IAEItemStack> items, final Actionable realForFake, final IPartitionList<IAEItemStack> filter, int multiple )
+	{
+		if( energySrc.extractAEPower( multiple, Actionable.SIMULATE, PowerMultiplier.CONFIG ) > 0.9 )
 		{
 			if( providedTemplate == null )
 			{
@@ -1823,7 +1827,7 @@ public class Platform
 			}
 
 			final AEItemStack ae_req = AEItemStack.create( providedTemplate );
-			ae_req.setStackSize( 1 );
+			ae_req.setStackSize( multiple );
 
 			if( filter == null || filter.isListed( ae_req ) )
 			{
@@ -1833,7 +1837,7 @@ public class Platform
 					final ItemStack extracted = ae_ext.getItemStack();
 					if( extracted != null )
 					{
-						energySrc.extractAEPower( 1, realForFake, PowerMultiplier.CONFIG );
+						energySrc.extractAEPower( multiple, realForFake, PowerMultiplier.CONFIG );
 						return extracted;
 					}
 				}
@@ -1854,13 +1858,13 @@ public class Platform
 						if( r.matches( ci, w ) && Platform.isSameItem( r.getCraftingResult( ci ), output ) )
 						{
 							final IAEItemStack ax = x.copy();
-							ax.setStackSize( 1 );
+							ax.setStackSize( multiple );
 							if( filter == null || filter.isListed( ax ) )
 							{
 								final IAEItemStack ex = src.extractItems( ax, realForFake, mySrc );
 								if( ex != null )
 								{
-									energySrc.extractAEPower( 1, realForFake, PowerMultiplier.CONFIG );
+									energySrc.extractAEPower( multiple, realForFake, PowerMultiplier.CONFIG );
 									return ex.getItemStack();
 								}
 							}
