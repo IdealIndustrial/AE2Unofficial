@@ -211,7 +211,7 @@ public class PartImportBus extends PartSharedItemBus implements IInventoryDestin
 					for (ItemSlot slot : myAdaptor) {
 						if (this.itemToSend <= 0)
 							break;
-						if (slot.isExtractable() && filterPredicate.test(slot.getAEItemStack())) {
+						if (slot.isExtractable() && filterPredicate != null && filterPredicate.test(slot.getAEItemStack())) {
 							while (this.itemToSend > 0) {
 								if (this.importStuff(myAdaptor, slot.getAEItemStack(), inv, energy, fzMode))
 									break;

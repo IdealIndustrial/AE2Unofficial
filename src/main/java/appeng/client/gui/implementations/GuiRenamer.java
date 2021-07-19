@@ -16,11 +16,12 @@ public class GuiRenamer  extends AEBaseGui {
     private GuiTextField name;
     public GuiRenamer(InventoryPlayer ip, ICustomNameObject obj) {
         super(new ContainerRenamer(ip, obj));
+        this.xSize = 256;
     }
     @Override
     public void initGui() {
         super.initGui();
-        this.name = new GuiTextField(this.fontRendererObj, this.guiLeft + 13, this.guiTop + 36, 150, this.fontRendererObj.FONT_HEIGHT);
+        this.name = new GuiTextField(this.fontRendererObj, this.guiLeft + 13, this.guiTop + 36, 250, this.fontRendererObj.FONT_HEIGHT);
         this.name.setEnableBackgroundDrawing(false);
         this.name.setMaxStringLength(32);
         this.name.setTextColor(0xFFFFFF);

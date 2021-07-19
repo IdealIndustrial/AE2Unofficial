@@ -154,7 +154,7 @@ public class PartExportBus extends PartSharedItemBus implements ICraftingRequest
 						filterPredicate = OreFilteredList.makeFilter(oreFilterString);
 					
 					for (IAEItemStack stack : inv.getStorageList()) {
-						if (stack == null || !this.filterPredicate.test(stack))
+						if (stack == null || filterPredicate == null || !this.filterPredicate.test(stack))
 							continue;
 						this.pushItemIntoTarget(destination, energy, inv, stack);
 						if (this.itemToSend <= 0)

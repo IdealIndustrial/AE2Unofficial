@@ -22,14 +22,15 @@ public class GuiOreFilter extends AEBaseGui {
 	private GuiTextField filter;
 	public GuiOreFilter(InventoryPlayer ip, IOreFilterable obj) {
 		super(new ContainerOreFilter(ip, obj));
+		this.xSize = 256;
 	}
 	
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.filter = new GuiTextField(this.fontRendererObj, this.guiLeft + 13, this.guiTop + 36, 150, this.fontRendererObj.FONT_HEIGHT);
+		this.filter = new GuiTextField(this.fontRendererObj, this.guiLeft + 13, this.guiTop + 36, 250, this.fontRendererObj.FONT_HEIGHT);
 		this.filter.setEnableBackgroundDrawing(false);
-		this.filter.setMaxStringLength(32);
+		this.filter.setMaxStringLength(100);
 		this.filter.setTextColor(0xFFFFFF);
 		this.filter.setVisible(true);
 		this.filter.setFocused(true);

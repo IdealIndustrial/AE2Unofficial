@@ -1,6 +1,7 @@
 package appeng.util.prioitylist;
 
 import appeng.api.storage.data.IAEItemStack;
+import appeng.core.AELog;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -35,10 +36,17 @@ public class OreFilteredList implements IPartitionList<IAEItemStack>{
 	}
 	
 	public static Predicate<IAEItemStack> makeFilter(String f) {
-		Predicate<ItemStack> matcher = makeMatcher(f);
-		if (matcher == null)
+		try {
+			Predicate<ItemStack> matcher = makeMatcher(f);
+			if (matcher == null)
+				return null;
+			return new OreListMatcher(matcher);
+		}
+		catch (Exception ex)
+		{
+			AELog.debug(ex);
 			return null;
-		return new OreListMatcher(matcher);
+		}
 	}
 	
 	private static Predicate<ItemStack> makeMatcher(String f) {
@@ -56,6 +64,7 @@ public class OreFilteredList implements IPartitionList<IAEItemStack>{
 			
 			for (String filter : filters) {
 				filter = filter.trim();
+				if (filter.isEmpty()) continue;
 				boolean negated = filter.startsWith("!");
 				if (negated)
 					filter = filter.substring(1);
@@ -71,6 +80,7 @@ public class OreFilteredList implements IPartitionList<IAEItemStack>{
 				} else {
 					int endLast = f.indexOf(lastFilter) + lastFilter.length();
 					int startThis = f.indexOf(filter);
+					if (startThis <= endLast) continue;
 					boolean or = f.substring(endLast, startThis).contains("|");
 					matcher = or ? matcher.or(test) : matcher.and(test);
 				}
