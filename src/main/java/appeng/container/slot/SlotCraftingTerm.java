@@ -293,13 +293,15 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 				}
 				else if( set[x] != null )
 				{
-					// eek! put it back!
-					final IAEItemStack fail = inv.injectItems( AEItemStack.create( set[x] ), Actionable.MODULATE, this.mySrc );
-					if( fail != null )
-					{
-						drops.add( fail.getItemStack() );
+					if (!Platform.isSameItem(this.craftInv.getStackInSlot( x ), set[x])) {
+						// for the recipes that leave e.g. empty buckets in the grid, can't batch them
+						final IAEItemStack fail = inv.injectItems(AEItemStack.create(set[x]), Actionable.MODULATE, this.mySrc);
+						if (fail != null) {
+							drops.add(fail.getItemStack());
+						}
+						set[x] = null;
+						hadEmptyStacks = true;
 					}
-					set[x] = null;
 				}
 			}
 		}
