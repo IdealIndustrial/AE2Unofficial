@@ -210,6 +210,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 					if (!extractItems(p, inv, all, is, set, multiple, ic, r, filter))
 					{
 						cleanup(p, inv, set);
+						multiple = 1;
 						extractItems(p, inv, all, is, set, 1, ic, r, filter);
 					}
 				}
