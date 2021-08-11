@@ -1,7 +1,3 @@
-task wrapper(type: Wrapper) {
-    gradleVersion = "2.4"
-}
-
 // WAILA
 task installWaila(type: Copy, dependsOn: "deinstallWaila") {
     from { configurations.mods }

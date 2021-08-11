@@ -98,6 +98,7 @@ configurations {
 dependencies {
 
 	provided fileTree(dir: 'lib/', include:'*.jar')
+    compileOnly fileTree(dir: 'nonRuntimeLibs/', include:'*.jar')
     // installable
     mods "mcp.mobius.jabba:Jabba:${jabba_version}_${minecraft_version}:dev"
     mods "codechicken:EnderStorage:${minecraft_version}-${enderstorage_version}:dev"
@@ -108,7 +109,7 @@ dependencies {
     mods "li.cil.oc:OpenComputers:MC${minecraft_version}-${opencomputers_version}:dev"
     // self compiled stubs
     compile(group: 'api', name: 'coloredlightscore', version: "${api_coloredlightscore_version}")
-    compile(group: 'api', name: 'craftguide', version: "${api_craftguide_version}")
+//    compile(group: 'api', name: 'craftguide', version: "${api_craftguide_version}")
     compile(group: 'api', name: 'immibis', version: "${api_immibis_version}")
     compile(group: 'api', name: 'mfr', version: "${api_mfr_version}")
     compile(group: 'api', name: 'railcraft', version: "${api_railcraft_version}")
