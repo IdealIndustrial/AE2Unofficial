@@ -384,7 +384,7 @@ public abstract class AEBaseGui extends GuiContainer
 
 		if( slot instanceof SlotFake )
 		{
-			final InventoryAction action = ctrlDown == 1 ? InventoryAction.SPLIT_OR_PLACE_SINGLE : InventoryAction.PICKUP_OR_SET_DOWN;
+			 final InventoryAction action = key == 1 ? InventoryAction.SHIFT_CLICK : ctrlDown == 1 ? InventoryAction.SPLIT_OR_PLACE_SINGLE : InventoryAction.PICKUP_OR_SET_DOWN;
 
 			if( this.drag_click.size() > 1 )
 			{

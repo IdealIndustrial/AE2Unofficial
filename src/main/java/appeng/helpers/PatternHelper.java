@@ -94,7 +94,11 @@ public class PatternHelper implements ICraftingPatternDetails, Comparable<Patter
 				this.markItemAs( x, gs, TestStatus.ACCEPT );
 			}
 
-			in.add( AEApi.instance().storage().createItemStack( gs ) );
+			IAEItemStack itt = AEApi.instance().storage().createItemStack( gs );
+			if (!this.isCrafting && itt != null && encodedValue.getBoolean("newSaveStyle")) {
+				itt.setStackSize(encodedValue.getLong("incnt"+x));
+			}
+			in.add( itt);
 			if( this.isCrafting ) // processing recipes are not tested anyway
 			this.testFrame.setInventorySlotContents( x, gs );
 		}
@@ -124,7 +128,11 @@ public class PatternHelper implements ICraftingPatternDetails, Comparable<Patter
 
 				if( gs != null )
 				{
-					out.add( AEApi.instance().storage().createItemStack( gs ) );
+					IAEItemStack itt = AEApi.instance().storage().createItemStack( gs );
+					if (encodedValue.getBoolean("newSaveStyle")) {
+						itt.setStackSize(encodedValue.getLong("outcnt" + x)); //todo move to tagList
+					}
+					out.add(itt);
 				}
 			}
 		}

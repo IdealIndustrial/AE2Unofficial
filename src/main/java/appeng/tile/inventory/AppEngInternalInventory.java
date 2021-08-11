@@ -238,6 +238,7 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 				if( this.inv[x] != null )
 				{
 					this.inv[x].writeToNBT( c );
+					c.setInteger("itcnt"+x, inv[x].stackSize);
 				}
 
 				target.setTag( "#" + x, c );
@@ -268,6 +269,7 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 				if( c != null )
 				{
 					this.inv[x] = ItemStack.loadItemStackFromNBT( c );
+					this.inv[x].stackSize = c.getInteger("itcnt"+x);
 				}
 			}
 			catch( final Exception e )
