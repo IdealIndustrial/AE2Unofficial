@@ -50,6 +50,9 @@ public class OreFilteredList implements IPartitionList<IAEItemStack>{
 	}
 	
 	private static Predicate<ItemStack> makeMatcher(String f) {
+		if (f.equals("*")) {
+			return is -> true;
+		}
 		Predicate<ItemStack> matcher = null;
 		if (notAWildcard(f)) {
 			final Predicate<String> test = Pattern.compile(f).asPredicate();
