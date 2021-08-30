@@ -28,6 +28,7 @@ import appeng.container.guisync.GuiSync;
 import appeng.container.slot.*;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 
 
@@ -125,5 +126,14 @@ public class ContainerInterface extends ContainerUpgradeable implements IOptiona
 	public boolean isSlotEnabled( final int idx )
 	{
 		return myDuality.getInstalledUpgrades(Upgrades.PATTERN_CAPACITY) >= idx;
+	}
+
+	@Override
+	public void onContainerClosed(EntityPlayer player) {
+		super.onContainerClosed(player);
+		if (myDuality != null) {
+			myDuality.onGuiClosed(player);
+		}
+
 	}
 }

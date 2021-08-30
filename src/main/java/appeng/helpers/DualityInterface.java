@@ -75,6 +75,7 @@ import appeng.util.inv.WrapperInvSlot;
 import appeng.util.item.AEItemStack;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryCrafting;
@@ -1285,6 +1286,22 @@ public class DualityInterface
 		catch( final GridAccessException e )
 		{
 			// :P
+		}
+	}
+
+	//check if there are more patterns than upgrades
+	public void onGuiClosed(EntityPlayer player) {
+		int allowedPatterns = 9 * (1 + getInstalledUpgrades(Upgrades.PATTERN_CAPACITY));
+		boolean dropped = false;
+		for (int i = allowedPatterns; i < patterns.getSizeInventory(); i++) {
+			if (patterns.getStackInSlot(i) != null) {
+				player.entityDropItem(patterns.getStackInSlot(i), 0.5f);
+				patterns.setInventorySlotContents(i, null);
+				dropped = true;
+			}
+		}
+		if (dropped) {
+			updateCraftingList();
 		}
 	}
 	
