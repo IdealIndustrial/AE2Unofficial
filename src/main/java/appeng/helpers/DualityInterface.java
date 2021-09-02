@@ -1295,7 +1295,9 @@ public class DualityInterface
 		boolean dropped = false;
 		for (int i = allowedPatterns; i < patterns.getSizeInventory(); i++) {
 			if (patterns.getStackInSlot(i) != null) {
-				player.entityDropItem(patterns.getStackInSlot(i), 0.5f);
+				if (Platform.isServer()) {
+					player.entityDropItem(patterns.getStackInSlot(i), 0.5f);
+				}
 				patterns.setInventorySlotContents(i, null);
 				dropped = true;
 			}
