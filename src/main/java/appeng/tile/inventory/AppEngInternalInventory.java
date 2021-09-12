@@ -21,6 +21,7 @@ package appeng.tile.inventory;
 
 import java.util.Iterator;
 
+import appeng.core.AEConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -269,7 +270,12 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 				if( c != null )
 				{
 					this.inv[x] = ItemStack.loadItemStackFromNBT( c );
-					this.inv[x].stackSize = c.getInteger("itcnt"+x);
+					if (c.hasKey("itcnt" + x)) {
+						this.inv[x].stackSize = c.getInteger("itcnt" + x);
+					}
+					if (AEConfig.instance.aeInvRecoverMode && inv[x].stackSize == 0) {
+						inv[x].stackSize = 1;
+					}
 				}
 			}
 			catch( final Exception e )

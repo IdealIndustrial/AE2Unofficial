@@ -89,6 +89,7 @@ public final class AEConfig extends Configuration implements IConfigurableObject
 	public boolean useLargeFonts = false;
 	public boolean useColoredCraftingStatus;
 	public boolean preserveSearchBar = true;
+	public boolean aeInvRecoverMode = false;
 	public int wirelessTerminalBattery = 1600000;
 	public int entropyManipulatorBattery = 200000;
 	public int matterCannonBattery = 200000;
@@ -139,6 +140,8 @@ public final class AEConfig extends Configuration implements IConfigurableObject
 		this.settings.registerSetting( Settings.TERMINAL_STYLE, TerminalStyle.TALL );
 		this.settings.registerSetting( Settings.SEARCH_MODE, SearchBoxMode.AUTOSEARCH );
 		this.settings.registerSetting( Settings.SAVE_SEARCH, YesNo.NO );
+
+		this.aeInvRecoverMode = this.get("debug", "AEInvRecoverMode", false).getBoolean();
 
 		this.spawnChargedChance = (float) ( 1.0 - this.get( "worldGen", "spawnChargedChance", 1.0 - this.spawnChargedChance ).getDouble( 1.0 - this.spawnChargedChance ) );
 		this.minMeteoriteDistance = this.get( "worldGen", "minMeteoriteDistance", this.minMeteoriteDistance ).getInt( this.minMeteoriteDistance );
