@@ -270,10 +270,10 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 				if( c != null )
 				{
 					this.inv[x] = ItemStack.loadItemStackFromNBT( c );
-					if (c.hasKey("itcnt" + x)) {
+					if (inv[x] != null && c.hasKey("itcnt" + x)) {
 						this.inv[x].stackSize = c.getInteger("itcnt" + x);
 					}
-					if (AEConfig.instance.aeInvRecoverMode && inv[x].stackSize == 0) {
+					if (inv[x] != null && AEConfig.instance.aeInvRecoverMode && inv[x].stackSize == 0) {
 						inv[x].stackSize = 1;
 					}
 				}
