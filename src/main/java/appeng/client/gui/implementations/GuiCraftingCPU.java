@@ -268,7 +268,7 @@ public class GuiCraftingCPU extends AEBaseGui implements ISortSource
 					if( this.tooltip == z - viewStart )
 					{
 						lineList.add( EnumChatFormatting.YELLOW + GuiText.Stored.getLocal() + ": " + Long.toString( stored.getStackSize() ) );
-						lineList.addAll( Arrays.asList( dspToolTip2 ) );
+//						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
 
 					downY += 5;
@@ -284,7 +284,7 @@ public class GuiCraftingCPU extends AEBaseGui implements ISortSource
 					if( this.tooltip == z - viewStart )
 					{
 						lineList.add( EnumChatFormatting.GREEN + GuiText.Crafting.getLocal() + ": " + Long.toString( activeStack.getStackSize() ) );
-						lineList.addAll( Arrays.asList( dspToolTip2 ) );
+//						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
 
 					downY += 5;
@@ -300,7 +300,7 @@ public class GuiCraftingCPU extends AEBaseGui implements ISortSource
 					if( this.tooltip == z - viewStart )
 					{
 						lineList.add( EnumChatFormatting.RED + GuiText.Scheduled.getLocal() + ": " + Long.toString( pendingStack.getStackSize() ) );
-						lineList.addAll( Arrays.asList( dspToolTip2 ) );
+//						lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					}
 				}
 
@@ -313,7 +313,7 @@ public class GuiCraftingCPU extends AEBaseGui implements ISortSource
 				if( this.tooltip == z - viewStart )
 				{
 					dspToolTip = Platform.getItemDisplayName( is );
-
+					lineList.addAll( Arrays.asList( dspToolTip2 ) );
 					if( lineList.size() > 0 )
 					{
 						dspToolTip = dspToolTip + '\n' + Joiner.on( "\n" ).join( lineList );
