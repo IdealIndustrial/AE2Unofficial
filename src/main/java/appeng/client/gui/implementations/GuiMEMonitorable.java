@@ -363,6 +363,7 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 			}
 		}
 
+
 		craftingGridOffsetX -= 25;
 		craftingGridOffsetY -= 6;
 	}
@@ -400,7 +401,12 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 	{
 		super.onGuiClosed();
 		Keyboard.enableRepeatEvents( false );
-		memoryText = this.searchField.getText();
+		if (AEConfig.instance.preserveSearchBar) {
+			memoryText = this.searchField.getText();
+		}
+		else {
+			memoryText = "";
+		}
 	}
 
 	@Override
