@@ -1,6 +1,18 @@
 shaped=
     ae2:BlockChest ae2:ItemMaterial.Cell1kPart ae2:BlockEnergyCell
     -> ae2:ToolPortableCell
+
+shaped=
+    ae2:BlockChest ae2:ItemMaterial.Cell4kPart ae2:BlockEnergyCell
+    -> ae2:ToolPortableCell:1
+
+shaped=
+    ae2:BlockChest ae2:ItemMaterial.Cell16kPart ae2:BlockDenseEnergyCell
+    -> ae2:ToolPortableCell:2
+
+shaped=
+    ae2:BlockChest ae2:ItemMaterial.Cell64kPart ae2:BlockDenseEnergyCell
+    -> ae2:ToolPortableCell:3
     
 shapeless=
     wrench monitor ae2:ItemMaterial.CalcProcessor oredictionary:chestWood
