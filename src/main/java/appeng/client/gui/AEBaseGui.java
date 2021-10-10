@@ -651,7 +651,7 @@ public abstract class AEBaseGui extends GuiContainer
 	public void onGuiClosed()
 	{
 		super.onGuiClosed();
-		this.subGui = true; // in case the gui is reopened later ( i'm looking at you NEI )
+//		this.subGui = true; // in case the gui is reopened later ( i'm looking at you NEI )
 	}
 
 	protected Slot getSlot( final int mouseX, final int mouseY )

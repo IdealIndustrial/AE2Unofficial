@@ -53,10 +53,14 @@ import appeng.parts.reporting.AbstractPartTerminal;
 import appeng.tile.misc.TileSecurity;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -94,9 +98,14 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 	private GuiImgButton terminalStyleBox;
 	private GuiImgButton searchStringSave;
 
+
+	private static GuiListener tmp_field = new GuiListener();
+	protected static boolean memorize = false, isContainerActive = false;
+
 	public GuiMEMonitorable( final InventoryPlayer inventoryPlayer, final ITerminalHost te )
 	{
 		this( inventoryPlayer, te, new ContainerMEMonitorable( inventoryPlayer, te ) );
+
 	}
 
 	public GuiMEMonitorable( final InventoryPlayer inventoryPlayer, final ITerminalHost te, final ContainerMEMonitorable c )
@@ -143,6 +152,7 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		{
 			this.myName = GuiText.Terminal;
 		}
+		isContainerActive = true;
 	}
 
 	public void postUpdate( final List<IAEItemStack> list )
@@ -326,14 +336,14 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		final Enum setting = AEConfig.instance.settings.getSetting( Settings.SEARCH_MODE );
 		this.searchField.setFocused( SearchBoxMode.AUTOSEARCH == setting || SearchBoxMode.NEI_AUTOSEARCH == setting );
 
-		if (AEConfig.instance.preserveSearchBar || this.isSubGui())
+		if (AEConfig.instance.preserveSearchBar || memorize)
 		{
 			this.searchField.setText(memoryText);
 			this.repo.setSearchString(memoryText);
 		}
 		this.repo.setSearchString( memoryText );
 
-		if( this.isSubGui() )
+		if (memorize)
 		{
 			this.repo.updateView();
 			this.setScrollBar();
@@ -396,17 +406,40 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 		super.mouseClicked( xCoord, yCoord, btn );
 	}
 
+	public static class GuiListener {
+
+		public GuiListener() {
+			FMLCommonHandler.instance().bus().register( this );
+			MinecraftForge.EVENT_BUS.register(this);
+		}
+		@SubscribeEvent
+		public void onGuiOpen(GuiOpenEvent event) {
+			if (!isContainerActive) {
+				return;
+			}
+			if (event.gui == null) {
+				memorize = false;
+			}
+			else {
+				memorize = true;
+			}
+		}
+
+
+	}
+
 	@Override
 	public void onGuiClosed()
 	{
 		super.onGuiClosed();
 		Keyboard.enableRepeatEvents( false );
-		if (AEConfig.instance.preserveSearchBar || isSubGui()) {
+		if (AEConfig.instance.preserveSearchBar || memorize) {
 			memoryText = this.searchField.getText();
 		}
 		else {
 			memoryText = "";
 		}
+		isContainerActive = false;
 	}
 
 	@Override
