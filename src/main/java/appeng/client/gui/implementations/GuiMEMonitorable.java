@@ -401,7 +401,7 @@ public class GuiMEMonitorable extends AEBaseMEGui implements ISortSource, IConfi
 	{
 		super.onGuiClosed();
 		Keyboard.enableRepeatEvents( false );
-		if (AEConfig.instance.preserveSearchBar) {
+		if (AEConfig.instance.preserveSearchBar || isSubGui()) {
 			memoryText = this.searchField.getText();
 		}
 		else {
